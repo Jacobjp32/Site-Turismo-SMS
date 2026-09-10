@@ -12,11 +12,55 @@
     --agro-line: rgba(23, 34, 29, 0.16);
     --agro-display: "Arial Black", "Franklin Gothic Heavy", Impact, sans-serif;
     --agro-body: Inter, "Segoe UI", Arial, sans-serif;
-    --agro-max: 1280px;
+
+    /* ---- Grid system -------------------------------------------------
+       One container, one gutter, one column count. Sections that bleed
+       full-width reuse --agro-gutter so their inner content still lands
+       on the same alignment lines as the contained sections. */
+    --agro-max: 1240px;
+    --agro-gutter: clamp(1.25rem, 4vw, 2.5rem);
+    --agro-bleed: max(var(--agro-gutter), calc((100vw - var(--agro-max)) / 2));
+    --agro-cols: 12;
+    --agro-gap: clamp(1rem, 2vw, 1.75rem);
+
+    /* ---- Typography scale -------------------------------------------
+       Seven levels. Every headline in the page maps to one of them, so
+       scale is decided once instead of per-selector. Maxima are capped
+       deliberately: impact comes from weight and spacing, not from size. */
+    --agro-display-xl: clamp(3.4rem, 6.4vw, 6rem);
+    --agro-display-lg: clamp(2.4rem, 3.6vw, 3.4rem);
+    --agro-display-md: clamp(1.9rem, 2.8vw, 2.6rem);
+    --agro-heading-lg: clamp(1.5rem, 2.2vw, 2.1rem);
+    --agro-heading-md: clamp(1.15rem, 1.6vw, 1.45rem);
+    --agro-body-text: clamp(0.95rem, 1.05vw, 1.05rem);
+    --agro-small: 0.75rem;
+
+    /* Letter spacing */
+    --agro-ls-display: -0.055em;
+    --agro-ls-heading: -0.035em;
+    --agro-ls-body: 0.01em;
+    --agro-ls-meta: 0.12em;
+
+    /* Line heights — display levels keep room for accents (Ã, Ç, Õ). */
+    --agro-lh-display: 1.02;
+    --agro-lh-heading: 1.18;
+    --agro-lh-body: 1.7;
+    --agro-lh-meta: 1.35;
+
+    /* Spacing scale */
+    --agro-gap-xs: clamp(0.5rem, 1vw, 0.85rem);
+    --agro-gap-sm: clamp(0.9rem, 1.6vw, 1.35rem);
+    --agro-gap-md: clamp(1.4rem, 2.6vw, 2.25rem);
+    --agro-gap-lg: clamp(2rem, 4vw, 3.5rem);
+    --agro-gap-xl: clamp(3rem, 6vw, 5rem);
+    --agro-gap-xxl: clamp(4.5rem, 8vw, 7rem);
 }
 
 html {
     scroll-behavior: smooth;
+    /* Single source of truth for the anchor offset. The sticky bars end at
+       ~240px on desktop; sections must not also carry scroll-margin-top or
+       the two offsets add up and the target lands far below the bars. */
     scroll-padding-top: 246px;
 }
 
@@ -45,7 +89,7 @@ body.agrosamas-page {
 }
 
 .agrosamas-page section[id] {
-    scroll-margin-top: 246px;
+    scroll-margin-top: 0;
 }
 
 .agro-breadcrumb {
@@ -90,8 +134,11 @@ body.agrosamas-page {
     isolation: isolate;
     margin: 0 auto;
     max-width: 1520px;
-    min-height: min(760px, calc(100vh - 180px));
-    min-height: min(760px, calc(100svh - 180px));
+    /* Reserve room for the global header + breadcrumb (231px measured) and
+       for the countdown band, which now occupies real flow space at the
+       bottom of the hero grid. */
+    min-height: min(760px, calc(100vh - 380px));
+    min-height: min(760px, calc(100svh - 380px));
     overflow: hidden;
     position: relative;
 }
@@ -163,12 +210,12 @@ body.agrosamas-page {
 .agro-hero__inner {
     align-items: end;
     display: grid;
-    gap: clamp(2rem, 5vw, 6rem);
-    grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.65fr);
+    gap: clamp(1.5rem, 2.6vw, 2.5rem) clamp(2rem, 4vw, 4rem);
+    grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
     margin: 0 auto;
     max-width: var(--agro-max);
-    min-height: 620px;
-    padding: clamp(4rem, 9vw, 8rem) 1.5rem clamp(7.5rem, 12vw, 9rem);
+    min-height: 0;
+    padding: clamp(1.4rem, 2.2vw, 2rem) var(--agro-gutter) clamp(1.6rem, 2.4vw, 2.2rem);
     position: relative;
     z-index: 1;
 }
@@ -187,7 +234,7 @@ body.agrosamas-page {
     color: rgba(255, 253, 248, 0.78);
     display: flex;
     gap: 0.65rem;
-    margin-bottom: clamp(2rem, 5vw, 4rem);
+    margin-bottom: clamp(0.9rem, 1.8vw, 1.4rem);
 }
 
 .agro-portal-mark span {
@@ -214,33 +261,17 @@ body.agrosamas-page {
 .agro-title__official-logo {
     display: block;
     height: auto;
-    margin-top: 0.9rem;
-    max-width: min(100%, 430px);
+    margin-top: 0.5rem;
+    max-width: min(100%, 260px);
     object-fit: contain;
-    width: clamp(250px, 31vw, 430px);
-}
-
-.agro-title__name {
-    display: block;
-    font-family: var(--agro-display);
-    font-size: clamp(4.3rem, 9.3vw, 9rem);
-    letter-spacing: -0.085em;
-    line-height: 0.8;
-    max-width: 850px;
-    text-transform: uppercase;
-}
-
-.agro-title__name span {
-    color: var(--agro-harvest);
-    display: block;
-    margin-left: clamp(2rem, 7vw, 7rem);
+    width: clamp(170px, 18vw, 260px);
 }
 
 .agro-hero__lead {
     color: rgba(255, 253, 248, 0.82);
     font-size: clamp(1rem, 1.7vw, 1.2rem);
-    line-height: 1.55;
-    margin-top: 2rem !important;
+    line-height: 1.5;
+    margin-top: 0.9rem !important;
     max-width: 620px;
 }
 
@@ -248,7 +279,7 @@ body.agrosamas-page {
     display: flex;
     flex-wrap: wrap;
     gap: 0.8rem;
-    margin-top: 2rem;
+    margin-top: 1.4rem;
 }
 
 .agro-button {
@@ -319,9 +350,9 @@ body.agrosamas-page {
 
 .agro-date-block__range span {
     font-family: var(--agro-display);
-    font-size: clamp(4.5rem, 9vw, 8rem);
-    letter-spacing: -0.1em;
-    line-height: 0.76;
+    font-size: clamp(3rem, 5vw, 4.4rem);
+    letter-spacing: -0.06em;
+    line-height: 0.9;
 }
 
 .agro-date-block__range i {
@@ -396,20 +427,31 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
     50% { box-shadow: 0 0 0 9px rgba(240, 106, 62, 0.08); }
 }
 
+/* The label column is sized to its content (auto) and the metrics take
+   the remaining space, so the label never gets stretched into a wide,
+   short box that wraps into four lines. */
+/* The countdown is a normal flow row at the bottom of the hero grid, not an
+   absolutely positioned overlay. That guarantees real vertical space between
+   the CTAs and the band instead of relying on z-index stacking. */
 .agro-countdown {
-    align-items: center;
+    align-items: stretch;
     background: var(--agro-harvest);
-    bottom: 0;
     color: var(--agro-ink);
-    display: flex;
-    gap: 1.4rem;
-    left: 50%;
+    display: grid;
+    gap: 0;
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    margin: 0 auto;
     max-width: var(--agro-max);
-    padding: 1rem 1.5rem;
-    position: absolute;
-    transform: translateX(-50%);
-    width: calc(100% - 3rem);
+    padding: 0;
+    position: relative;
+    width: calc(100% - (var(--agro-gutter) * 2));
     z-index: 3;
+}
+
+/* Intentional breathing room between the CTA row and the countdown band. */
+.agro-hero__inner > .agro-countdown {
+    margin-top: clamp(0.5rem, 1.2vw, 1rem);
 }
 
 .agro-countdown[hidden] {
@@ -417,34 +459,54 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
 }
 
 .agro-countdown__label {
-    font-size: 0.72rem;
+    align-self: center;
+    border-right: 1px solid rgba(23, 34, 29, 0.22);
+    font-size: var(--agro-small);
     font-weight: 850;
-    letter-spacing: 0.08em;
-    max-width: 110px;
+    letter-spacing: var(--agro-ls-meta);
+    line-height: var(--agro-lh-meta);
+    margin: 0;
+    max-width: none;
+    padding: clamp(1rem, 2vw, 1.4rem) clamp(1.1rem, 2.4vw, 1.8rem);
     text-transform: uppercase;
 }
 
 .agro-countdown__values {
-    display: flex;
-    gap: clamp(1rem, 5vw, 4rem);
+    align-items: stretch;
+    display: grid;
+    gap: 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+/* Each metric is a stacked unit: number above, unit below. Consistent
+   heights and a shared baseline make the three read as one rhythm. */
 .agro-countdown__values > span {
     align-items: baseline;
+    border-left: 1px solid rgba(23, 34, 29, 0.22);
     display: flex;
-    gap: 0.35rem;
+    flex-direction: column;
+    gap: 0.15rem;
+    justify-content: center;
+    min-width: 96px;
+    padding: clamp(0.85rem, 1.8vw, 1.2rem) clamp(1rem, 2.2vw, 1.7rem);
+}
+
+.agro-countdown__values > span:first-child {
+    border-left: 0;
 }
 
 .agro-countdown__values strong {
     font-family: var(--agro-display);
-    font-size: clamp(1.7rem, 3vw, 2.6rem);
-    letter-spacing: -0.06em;
+    font-size: clamp(1.7rem, 2.6vw, 2.4rem);
+    letter-spacing: -0.05em;
     line-height: 1;
 }
 
 .agro-countdown__values small {
-    font-size: 0.68rem;
-    font-weight: 750;
+    font-size: var(--agro-small);
+    font-weight: 800;
+    letter-spacing: var(--agro-ls-meta);
+    line-height: 1;
     text-transform: uppercase;
 }
 
@@ -501,11 +563,11 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
 
 .agro-section {
     display: grid;
-    gap: clamp(2rem, 5vw, 5rem);
-    grid-template-columns: 70px minmax(0, 1.15fr) minmax(280px, 0.85fr);
+    gap: clamp(1.5rem, 3vw, 3rem);
+    grid-template-columns: 56px minmax(0, 1.15fr) minmax(280px, 0.85fr);
     margin: 0 auto;
     max-width: var(--agro-max);
-    padding: clamp(5rem, 10vw, 9rem) 1.5rem;
+    padding: clamp(4.5rem, 8vw, 7rem) var(--agro-gutter);
 }
 
 .agro-section__number {
@@ -527,9 +589,11 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
 .agro-info h2,
 .agro-closing h2 {
     font-family: var(--agro-display);
-    font-size: clamp(2.8rem, 6vw, 5.8rem);
-    letter-spacing: -0.07em;
-    line-height: 0.94;
+    font-size: var(--agro-display-lg);
+    letter-spacing: var(--agro-ls-display);
+    line-height: var(--agro-lh-display);
+    max-width: 26ch;
+    text-wrap: balance;
     text-transform: uppercase;
 }
 
@@ -567,7 +631,7 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
 .agro-program {
     background: var(--agro-ink);
     color: var(--agro-white);
-    padding: clamp(5rem, 9vw, 8rem) max(1.5rem, calc((100vw - var(--agro-max)) / 2));
+    padding: clamp(5rem, 9vw, 8rem) var(--agro-bleed);
 }
 
 .agro-program__header {
@@ -638,6 +702,35 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
     text-transform: uppercase;
 }
 
+/* Mobile: the full weekday name ("sexta-feira") wraps into several lines in
+   a 390px tab strip. Show a concise visual label instead, while the full
+   name stays in the DOM for screen readers via the tab's aria-label. */
+.agro-day-tab__short {
+    display: none;
+}
+
+@media (max-width: 560px) {
+    .agro-day-tab__full {
+        display: none;
+    }
+
+    .agro-day-tab__short {
+        display: inline;
+    }
+
+    /* Keep "SET · SEX/SÁB/DOM/SEG" on a single line: tighten the tracking
+       and forbid wrapping only on this label. */
+    .agro-day-tab span {
+        font-size: 0.66rem;
+        letter-spacing: 0.06em;
+        white-space: nowrap;
+    }
+
+    .agro-day-tab {
+        padding: 0.85rem 0.7rem;
+    }
+}
+
 .agro-day-tab:hover,
 .agro-day-tab[aria-selected="true"] {
     background: var(--agro-harvest);
@@ -679,10 +772,10 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
 
 .agro-program__fallback h3 {
     font-family: var(--agro-display);
-    font-size: clamp(2rem, 4.4vw, 4rem);
-    letter-spacing: -0.055em;
-    line-height: 1;
-    max-width: 760px;
+    font-size: clamp(1.8rem, 3.8vw, 3.6rem);
+    letter-spacing: -0.065em;
+    line-height: 1.05;
+    max-width: 680px;
     text-transform: uppercase;
 }
 
@@ -738,6 +831,8 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
     background:
         radial-gradient(circle at 88% 18%, rgba(231, 182, 79, 0.22), transparent 26%),
         linear-gradient(115deg, rgba(200, 81, 45, 0.34), rgba(255, 255, 255, 0.08) 58%);
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    grid-template-columns: auto minmax(0, 1fr) auto;
     min-height: 285px;
     overflow: hidden;
     padding: clamp(2rem, 5vw, 4.5rem);
@@ -760,26 +855,36 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
     z-index: 1;
 }
 
+/* Date is a compact stacked stamp — day over month — so it reads as a
+   label, not as a second headline competing with the attraction. */
 .agro-program-item--spotlight time {
+    align-items: baseline;
     color: var(--agro-harvest);
-    font-size: clamp(2.4rem, 5vw, 4.7rem);
-    letter-spacing: -0.04em;
-    line-height: 0.85;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--agro-display);
+    font-size: clamp(1.5rem, 2.4vw, 2.1rem);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    text-align: left;
+    white-space: nowrap;
 }
 
 .agro-program-item--spotlight h3 {
     font-family: var(--agro-display);
-    font-size: clamp(3.2rem, 7.5vw, 7rem);
-    letter-spacing: -0.065em;
-    line-height: 0.82;
+    font-size: clamp(2.6rem, 5.4vw, 5rem);
+    letter-spacing: var(--agro-ls-display);
+    line-height: var(--agro-lh-display);
     text-transform: uppercase;
 }
 
 .agro-program-item--spotlight > span {
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: var(--agro-white);
+    font-size: var(--agro-small);
     font-weight: 800;
-    letter-spacing: 0.12em;
+    justify-self: end;
+    letter-spacing: var(--agro-ls-meta);
     padding: 0.6rem 0.8rem;
     text-transform: uppercase;
 }
@@ -795,7 +900,7 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
 
 .agro-universe {
     background: var(--agro-straw);
-    padding: clamp(5rem, 10vw, 9rem) max(1.5rem, calc((100vw - var(--agro-max)) / 2));
+    padding: clamp(5rem, 10vw, 9rem) var(--agro-bleed);
 }
 
 .agro-universe__heading {
@@ -811,30 +916,32 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
 .agro-universe__mosaic {
     display: grid;
     gap: 1px;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    margin-top: clamp(3rem, 6vw, 5rem);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: clamp(2.5rem, 5vw, 4rem);
 }
 
 .agro-axis {
     background: var(--agro-white);
     display: flex;
     flex-direction: column;
-    min-height: 250px;
-    padding: clamp(1.3rem, 3vw, 2.2rem);
+    min-height: 260px;
+    padding: clamp(1.3rem, 2.4vw, 2rem);
     position: relative;
 }
 
 .agro-axis > span {
     color: var(--agro-rust);
-    font-size: 0.7rem;
+    font-size: var(--agro-small);
     font-weight: 850;
+    letter-spacing: var(--agro-ls-meta);
+    text-transform: uppercase;
 }
 
 .agro-axis h3 {
     font-family: var(--agro-display);
-    font-size: clamp(2rem, 4vw, 4.2rem);
-    letter-spacing: -0.065em;
-    line-height: 0.95;
+    font-size: var(--agro-display-md);
+    letter-spacing: var(--agro-ls-heading);
+    line-height: var(--agro-lh-display);
     margin-top: auto !important;
     text-transform: uppercase;
 }
@@ -842,28 +949,39 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
 .agro-axis p {
     color: #566159;
     font-size: 0.86rem;
-    line-height: 1.55;
+    line-height: 1.6;
     margin-top: 0.8rem !important;
-    max-width: 310px;
+    max-width: 34ch;
 }
 
-.agro-axis--field { background: var(--agro-rust); color: #fff; grid-column: span 7; min-height: 360px; }
+/* Every module carries the same structural weight; the asymmetry lives
+   in colour and in the city band, never in unpredictable spans. */
+.agro-axis--field { background: var(--agro-rust); color: #fff; }
 .agro-axis--field > span,
-.agro-axis--field p { color: rgba(255, 255, 255, 0.8); }
-.agro-axis--flavor { grid-column: span 5; }
-.agro-axis--business { background: var(--agro-harvest); grid-column: span 4; }
-.agro-axis--music { background: var(--agro-ink); color: #fff; grid-column: span 5; }
+.agro-axis--field p { color: rgba(255, 255, 255, 0.82); }
+.agro-axis--business { background: var(--agro-harvest); }
+.agro-axis--music { background: var(--agro-ink); color: #fff; }
 .agro-axis--music > span { color: var(--agro-harvest); }
-.agro-axis--music p { color: rgba(255, 255, 255, 0.72); }
-.agro-axis--family { grid-column: span 3; }
-.agro-axis--city { background: var(--agro-forest); color: #fff; grid-column: span 12; min-height: 220px; }
+.agro-axis--music p { color: rgba(255, 255, 255, 0.74); }
+.agro-axis--city {
+    background: var(--agro-forest);
+    color: #fff;
+    grid-column: 1 / -1;
+    min-height: 200px;
+}
 .agro-axis--city > span { color: var(--agro-harvest); }
-.agro-axis--city h3 { font-size: clamp(2.7rem, 7vw, 7rem); }
-.agro-axis--city p { color: rgba(255, 255, 255, 0.78); }
+/* One line on desktop: the scale yields to the composition, not the
+   other way round. Wrapping is only allowed once the viewport is narrow. */
+.agro-axis--city h3 {
+    font-size: clamp(2rem, 4.4vw, 3.6rem);
+    line-height: var(--agro-lh-display);
+    white-space: nowrap;
+}
+.agro-axis--city p { color: rgba(255, 255, 255, 0.8); max-width: 62ch; }
 
 .agro-plan {
     background: var(--agro-paper);
-    padding: clamp(5rem, 10vw, 9rem) max(1.5rem, calc((100vw - var(--agro-max)) / 2));
+    padding: clamp(5rem, 10vw, 9rem) var(--agro-bleed);
 }
 
 .agro-plan__intro {
@@ -1014,15 +1132,16 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
     z-index: 1;
 }
 
-.agro-arrival__copy {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: clamp(3rem, 7vw, 7rem);
+.agro-arrival h2 {
+    font-size: var(--agro-display-md);
+    max-width: 18ch;
 }
 
-.agro-arrival h2 {
-    font-size: clamp(2.8rem, 5vw, 5.2rem);
+.agro-arrival__copy {
+    align-content: center;
+    display: grid;
+    gap: 1.5rem;
+    padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 3.5rem);
 }
 
 .agro-arrival dl {
@@ -1067,7 +1186,7 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
 .agro-info {
     margin: 0 auto;
     max-width: var(--agro-max);
-    padding: clamp(5rem, 10vw, 9rem) 1.5rem;
+    padding: clamp(4.5rem, 8vw, 7rem) var(--agro-gutter);
 }
 
 .agro-info > div:first-child {
@@ -1088,21 +1207,25 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
     display: flex;
     flex-direction: column;
     min-height: 170px;
-    padding: 1.5rem;
+    padding: clamp(1.2rem, 2.5vw, 1.8rem);
 }
 
 .agro-info__confirmed span {
     color: var(--agro-rust-dark);
-    font-size: 0.7rem;
+    font-size: clamp(0.65rem, 1vw, 0.75rem);
     font-weight: 850;
-    letter-spacing: 0.1em;
+    letter-spacing: var(--agro-ls-meta);
     text-transform: uppercase;
 }
 
 .agro-info__confirmed strong {
-    font-size: clamp(1.15rem, 2vw, 1.55rem);
-    line-height: 1.25;
+    font-family: var(--agro-display);
+    font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+    font-weight: 900;
+    letter-spacing: -0.045em;
+    line-height: 1.35;
     margin-top: auto;
+    text-transform: uppercase;
 }
 
 .agro-official {
@@ -1163,17 +1286,12 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
     margin: 0 auto;
     max-width: var(--agro-max);
     min-height: 650px;
-    padding: 5rem 1.5rem;
+    padding: 5rem var(--agro-gutter);
     position: relative;
 }
 
 .agro-closing .agro-kicker {
     color: var(--agro-harvest);
-}
-
-.agro-closing h2 {
-    font-size: clamp(3rem, 7vw, 7rem);
-    max-width: 1030px;
 }
 
 .agro-closing p:not(.agro-kicker) {
@@ -1233,15 +1351,23 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
 }
 
 @media (max-width: 1050px) {
-    .agro-title__name { font-size: clamp(4.1rem, 10vw, 7rem); }
     .agro-plan__links { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .agro-plan-card--stay { grid-column: span 1; }
     .agro-arrival { grid-template-columns: minmax(0, 1fr) minmax(340px, 0.9fr); }
 }
 
+@media (max-width: 900px) {
+    /* Six modules no longer fit three across without crushing the
+       descriptions, so the mosaic drops to two columns. */
+    .agro-universe__mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .agro-axis--city h3 { white-space: normal; }
+}
+
 @media (max-width: 820px) {
+    /* Sticky bars end at ~222px on mobile; match the offset to that real
+       height so the section top lands just below them. */
     html { scroll-padding-top: 226px; }
-    .agrosamas-page section[id] { scroll-margin-top: 226px; }
+    .agrosamas-page section[id] { scroll-margin-top: 0; }
     .agro-hero { min-height: auto; }
     .agro-hero__photo { inset: 0; opacity: 0.45; }
     .agro-hero__inner {
@@ -1252,48 +1378,45 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
     }
     .agro-portal-mark { margin-bottom: 2.5rem; }
     .agro-date-block { border-left: 0; border-top: 1px solid rgba(255, 255, 255, 0.28); padding: 1.8rem 0 0; }
-    .agro-date-block__range span { font-size: clamp(4.8rem, 17vw, 7rem); }
-    .agro-countdown { width: calc(100% - 2rem); }
+    .agro-date-block__range span { font-size: clamp(3.4rem, 12vw, 5rem); }
+    .agro-countdown { grid-template-columns: 1fr; }
+    .agro-countdown__label {
+        border-bottom: 1px solid rgba(23, 34, 29, 0.22);
+        border-right: 0;
+        padding-bottom: 0.7rem;
+        padding-top: 0.9rem;
+    }
+    .agro-countdown__values > span { padding-bottom: 0.9rem; padding-top: 0.9rem; }
     .agro-local-nav.is-fixed { top: 164px; }
     .agro-section { grid-template-columns: 48px minmax(0, 1fr); }
     .agro-intro__copy { grid-column: 2; }
     .agro-universe__heading,
     .agro-plan__intro,
     .agro-info > div:first-child { grid-template-columns: 1fr; }
-    .agro-universe__mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .agro-axis,
-    .agro-axis--field,
-    .agro-axis--flavor,
-    .agro-axis--business,
-    .agro-axis--music,
-    .agro-axis--family,
-    .agro-axis--city { grid-column: span 1; min-height: 260px; }
-    .agro-axis--city { grid-column: 1 / -1; }
+    .agro-axis { min-height: 240px; padding: clamp(1.2rem, 2vw, 1.6rem); }
+    .agro-axis h3 { font-size: var(--agro-heading-lg); }
+    .agro-axis--city { min-height: 190px; }
+    .agro-axis--city h3 { font-size: var(--agro-display-md); }
     .agro-plan__intro .agro-kicker { grid-column: auto; }
     .agro-plan__links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .agro-arrival { grid-template-columns: 1fr; }
     .agro-arrival__media { min-height: 460px; }
-    .agro-arrival__copy { padding: 4rem 1.5rem; }
+    .agro-arrival__copy { padding: 4rem var(--agro-gutter); }
     .agro-info__confirmed { grid-template-columns: 1fr; }
     .agro-info__confirmed article { min-height: 130px; }
 }
 
 @media (max-width: 560px) {
-    .agro-breadcrumb { padding-left: 1rem; padding-right: 1rem; }
-    .agro-hero__inner { padding: 4rem 1rem 13rem; }
-    .agro-title__name { font-size: clamp(3.7rem, 19vw, 5.2rem); }
-    .agro-title__name span { margin-left: 1.2rem; }
+    .agro-breadcrumb { padding-left: var(--agro-gutter); padding-right: var(--agro-gutter); }
+    .agro-hero__inner { padding: 3.5rem var(--agro-gutter) 12rem; }
     .agro-hero__lead { font-size: 0.98rem; }
     .agro-hero__actions { align-items: stretch; flex-direction: column; }
     .agro-button { width: 100%; }
-    .agro-countdown { align-items: flex-start; flex-direction: column; gap: 0.65rem; padding: 0.85rem 1rem; width: calc(100% - 2rem); }
-    .agro-countdown__label { max-width: none; }
-    .agro-countdown__values { justify-content: space-between; width: 100%; }
-    .agro-countdown__values > span { align-items: flex-start; flex-direction: column; gap: 0; }
-    .agro-countdown__values strong { font-size: 1.8rem; }
+    .agro-countdown__values > span { min-width: 0; padding-left: 0.75rem; padding-right: 0.75rem; }
+    .agro-countdown__values strong { font-size: clamp(1.5rem, 6vw, 2rem); }
     .agro-local-nav__inner { padding-left: 0.75rem; padding-right: 0.75rem; }
     .agro-local-nav a { font-size: 0.68rem; min-height: 38px; padding: 0.6rem 0.72rem; }
-    .agro-section { gap: 1.2rem; grid-template-columns: 1fr; padding-left: 1rem; padding-right: 1rem; }
+    .agro-section { gap: 1.2rem; grid-template-columns: 1fr; }
     .agro-section__number { font-size: 0.9rem; }
     .agro-intro__copy { grid-column: auto; }
     .agro-section__heading h2,
@@ -1301,11 +1424,8 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
     .agro-plan h2,
     .agro-arrival h2,
     .agro-info h2,
-    .agro-closing h2 { font-size: clamp(2.45rem, 13vw, 4rem); }
-    .agro-program h2 { font-size: clamp(2.25rem, 10.5vw, 3.2rem); }
-    .agro-program,
-    .agro-universe,
-    .agro-plan { padding-left: 1rem; padding-right: 1rem; }
+    .agro-closing h2,
+    .agro-program h2 { font-size: var(--agro-display-md); }
     .agro-program__header { align-items: flex-start; flex-direction: column; }
     .agro-program__availability { border-left: 0; border-top: 1px solid rgba(255, 255, 255, 0.22); padding: 0.8rem 0 0; width: 100%; }
     .agro-day-selector { gap: 0.4rem; overflow-x: auto; padding-bottom: 0.5rem; scroll-snap-type: x mandatory; }
@@ -1315,18 +1435,23 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
     .agro-program__fallback .agro-button { align-self: stretch; }
     .agro-program-item { grid-template-columns: 72px minmax(0, 1fr); }
     .agro-program-item > span { grid-column: 2; }
-    .agro-program-item--spotlight { gap: 1.5rem; grid-template-columns: 1fr; min-height: 350px; }
+    /* Date stamp moves above the name so the attraction keeps the full
+       width of the card instead of being squeezed beside the date. */
+    .agro-program-item--spotlight {
+        align-items: start;
+        gap: 1.25rem;
+        grid-template-columns: 1fr;
+        min-height: 0;
+        padding: 2rem 1.25rem;
+    }
+    .agro-program-item--spotlight time { flex-direction: row; gap: 0.5rem; }
+    .agro-program-item--spotlight h3 { font-size: var(--agro-display-md); }
     .agro-program-item--spotlight > span { grid-column: 1; justify-self: start; }
-    .agro-program-item--spotlight h3 { font-size: clamp(3.4rem, 17vw, 5.6rem); }
-    .agro-title__official-logo { width: min(100%, 330px); }
-    .agro-program-item--spotlight { gap: 1.5rem; grid-template-columns: 1fr; min-height: 350px; }
-    .agro-program-item--spotlight > span { grid-column: 1; justify-self: start; }
-    .agro-program-item--spotlight h3 { font-size: clamp(3.4rem, 17vw, 5.6rem); }
-    .agro-title__official-logo { width: min(100%, 330px); }
+    .agro-title__official-logo { width: min(100%, 300px); }
     .agro-universe__mosaic { grid-template-columns: 1fr; }
-    .agro-axis,
-    .agro-axis--city { grid-column: auto; min-height: 230px; }
-    .agro-axis--field { min-height: 300px; }
+    .agro-axis { min-height: 200px; }
+    .agro-axis--city { min-height: 180px; }
+    .agro-axis--city h3 { font-size: var(--agro-heading-lg); }
     .agro-plan__links { grid-template-columns: 1fr; }
     .agro-plan-card,
     .agro-plan-card--stay,
@@ -1337,15 +1462,14 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
     .agro-plan-card--map { min-height: 280px; }
     .agro-arrival__media { min-height: 360px; }
     .agro-arrival__media span { bottom: 1rem; left: 1rem; }
-    .agro-arrival__copy { padding: 3.5rem 1rem; }
+    .agro-arrival__copy { padding: 3.5rem var(--agro-gutter); }
     .agro-arrival dl > div { grid-template-columns: 1fr; gap: 0.25rem; }
     .agro-arrival .agro-button { align-self: stretch; }
-    .agro-info { padding-left: 1rem; padding-right: 1rem; }
     .agro-official { align-items: stretch; flex-direction: column; padding: 2rem 1.25rem; }
     .agro-official .agro-button { align-self: stretch; }
     .agro-closing,
     .agro-closing__content { min-height: 610px; }
-    .agro-closing__content { padding-left: 1rem; padding-right: 1rem; }
+    .agro-closing__content { padding-left: var(--agro-gutter); padding-right: var(--agro-gutter); }
     .agro-closing .agro-button { align-self: stretch; }
 }
 
@@ -1384,4 +1508,25 @@ body.high-contrast .agro-day-tab {
 body.high-contrast .agro-hero__photo,
 body.high-contrast .agro-closing__photo {
     opacity: 0.22;
+}
+
+/* ---------------------------------------------------------------------------
+   Anchor offset for the AgroSamas local navigation.
+
+   nav-shared.js injects a global scroll-padding-top (166px / 161px) sized for
+   the site header alone. On this page the sticky local nav adds ~60px more, so
+   the global value left the target section starting underneath the bar. These
+   rules are scoped to the AgroSamas page and use !important to win over the
+   injected global stylesheet, matching the real combined bar height.
+   --------------------------------------------------------------------------- */
+@media (max-width: 820px) {
+    html:has(.agrosamas-page) {
+        scroll-padding-top: 226px !important;
+    }
+}
+
+@media (max-width: 420px) {
+    html:has(.agrosamas-page) {
+        scroll-padding-top: 226px !important;
+    }
 }

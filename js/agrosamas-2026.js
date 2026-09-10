@@ -55,6 +55,14 @@
         }).format(toUtcNoon(dateKey));
     }
 
+    // Concise visual weekday for narrow tab strips (SEX, SÁB, DOM, SEG).
+    function dateWeekdayShort(dateKey) {
+        return new Intl.DateTimeFormat('pt-BR', {
+            weekday: 'short',
+            timeZone: 'UTC'
+        }).format(toUtcNoon(dateKey)).replace(/\.$/, '');
+    }
+
     function localDateKey(value, timeZone) {
         try {
             return new Intl.DateTimeFormat('en-CA', {
@@ -335,8 +343,16 @@
             tab.setAttribute('aria-selected', String(index === 0));
             tab.setAttribute('data-program-date', dateKey);
             tab.tabIndex = index === 0 ? 0 : -1;
+            var weekdayFull = dateWeekday(dateKey);
+            var weekdayShort = dateWeekdayShort(dateKey);
+            // Full weekday stays available to assistive tech even when the
+            // narrow layout shows only the concise visual label.
+            tab.setAttribute('aria-label', dateDay(dateKey) + ' de setembro, ' + weekdayFull);
             tab.appendChild(element('strong', '', dateDay(dateKey)));
-            tab.appendChild(element('span', '', 'SET · ' + dateWeekday(dateKey)));
+            var weekdaySpan = element('span', '', 'SET · ');
+            weekdaySpan.appendChild(element('span', 'agro-day-tab__full', weekdayFull));
+            weekdaySpan.appendChild(element('span', 'agro-day-tab__short', weekdayShort));
+            tab.appendChild(weekdaySpan);
             dayContainer.appendChild(tab);
             return tab;
         });
@@ -424,17 +440,62 @@
             return one(link.getAttribute('href'));
         }).filter(Boolean);
         if (!sections.length) return;
-        var observer = new root.IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) {
-                if (!entry.isIntersecting) return;
-                links.forEach(function (link) {
-                    var active = link.getAttribute('href') === '#' + entry.target.id;
-                    if (active) link.setAttribute('aria-current', 'location');
-                    else link.removeAttribute('aria-current');
-                });
+
+        // The active section is the last one whose top has passed the sticky
+        // bars. A scroll-driven computation keeps the highlight in sync with
+        // the visual position, which a narrow IntersectionObserver band
+        // cannot do: after an anchor click the section sits above the band,
+        // so the previous item stayed highlighted.
+        function stickyOffset() {
+            var nav = one('[data-local-nav]');
+            var navBottom = nav ? nav.getBoundingClientRect().bottom : 0;
+            var a11y = one('[class*="acessibilidade"], [class*="a11y"]');
+            var a11yBottom = a11y ? a11y.getBoundingClientRect().bottom : 0;
+            return Math.max(navBottom, a11yBottom, 0);
+        }
+
+        function updateActiveSection() {
+            var offset = stickyOffset();
+            // The anchor scroll leaves the section top just below the sticky
+            // bars (scroll-padding-top). Treat that landing zone as "reached"
+            // so the clicked item becomes active instead of the previous one.
+            var tolerance = 8;
+            var current = sections[0];
+            sections.forEach(function (section) {
+                if (section.getBoundingClientRect().top - offset <= tolerance) current = section;
             });
-        }, { rootMargin: '-42% 0px -50% 0px', threshold: 0 });
-        sections.forEach(function (section) { observer.observe(section); });
+            // The last section may be too short to reach the top of the
+            // viewport; when the page is scrolled to the end, it is active.
+            var atBottom = root.innerHeight + root.scrollY >= document.documentElement.scrollHeight - 2;
+            if (atBottom) current = sections[sections.length - 1];
+            links.forEach(function (link) {
+                var active = link.getAttribute('href') === '#' + current.id;
+                if (active) link.setAttribute('aria-current', 'location');
+                else link.removeAttribute('aria-current');
+            });
+        }
+
+        var activeScheduled = false;
+        function scheduleActiveUpdate() {
+            if (activeScheduled) return;
+            activeScheduled = true;
+            root.requestAnimationFrame(function () {
+                activeScheduled = false;
+                updateActiveSection();
+            });
+        }
+
+        root.addEventListener('scroll', scheduleActiveUpdate, { passive: true });
+        root.addEventListener('resize', scheduleActiveUpdate);
+        // Re-evaluate after an anchor click settles the smooth scroll.
+        links.forEach(function (link) {
+            link.addEventListener('click', function () {
+                root.setTimeout(updateActiveSection, 60);
+                root.setTimeout(updateActiveSection, 320);
+                root.setTimeout(updateActiveSection, 700);
+            });
+        });
+        updateActiveSection();
     }
 
     function init() {
