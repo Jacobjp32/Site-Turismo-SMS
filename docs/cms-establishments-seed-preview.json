@@ -617,8 +617,8 @@
       "categoryLabel": "Experiencia cultural",
       "status": "draft",
       "content": {
-        "summary": "A Arena Cultural de São Mateus do Sul é o espaço destinado a shows, apresentações artísticas, espetáculos e eventos culturais da cidade. Com capacidade para grandes públicos, é palco de parte da programação do AgroSamas, do Natal Ouro Verde e de outros eventos ao longo do ano.",
-        "description": "A Arena Cultural de São Mateus do Sul é o espaço destinado a shows, apresentações artísticas, espetáculos e eventos culturais da cidade. Com capacidade para grandes públicos, é palco de parte da programação do AgroSamas, do Natal Ouro Verde e de outros eventos ao longo do ano.",
+        "summary": "A Arena Cultural de São Mateus do Sul é um espaço destinado a shows, apresentações artísticas, espetáculos e eventos culturais da cidade. Sua utilização varia conforme a programação de cada evento.",
+        "description": "A Arena Cultural de São Mateus do Sul é um espaço destinado a shows, apresentações artísticas, espetáculos e eventos culturais da cidade. Sua utilização varia conforme a programação de cada evento.",
         "longDescription": "Concebida para democratizar o acesso à cultura, a Arena Cultural consolidou-se como um dos principais equipamentos culturais de São Mateus do Sul, recebendo atrações locais, regionais e nacionais.",
         "accessibility": "Consulte o evento específico.",
         "openingHours": "Varia conforme programação.",
@@ -4323,16 +4323,15 @@
       "categoryLabel": "Gastronomia",
       "status": "draft",
       "content": {
-        "summary": "O Parque de Exposições de São Mateus do Sul é o principal espaço para eventos de grande porte do município. Sede do V AgroSamas — o maior evento do município —, o parque recebe anualmente exposições agropecuárias, shows nacionais, feiras gastronômicas e o famoso Parque dos Dinossauros.",
-        "description": "O Parque de Exposições de São Mateus do Sul é o principal espaço para eventos de grande porte do município. Sede do V AgroSamas — o maior evento do município —, o parque recebe anualmente exposições agropecuárias, shows nacionais, feiras gastronômicas e o famoso Parque dos Dinossauros.",
-        "longDescription": "O Parque de Exposições foi construído para suprir a demanda por espaços adequados à realização de eventos de grande porte na cidade. Seu maior destaque é o AgroSamas, que em sua edição mais recente reuniu mais de 100 mil visitantes.",
+        "summary": "O Parque de Exposições de São Mateus do Sul é um espaço municipal utilizado para eventos de diferentes portes e formatos, conforme o calendário oficial.",
+        "description": "O Parque de Exposições de São Mateus do Sul é um espaço municipal utilizado para eventos de diferentes portes e formatos, conforme o calendário oficial.",
+        "longDescription": "O espaço atende atividades e eventos municipais de acordo com a programação divulgada por seus organizadores.",
         "accessibility": "Consulte o evento específico.",
         "openingHours": "Varia conforme eventos. Consulte o calendário.",
         "tags": [
           "Eventos · Agropecuária",
           "🚜 Agropecuária",
-          "Centro",
-          "Eventos · Agropecuária · AgroSamas"
+          "Centro"
         ],
         "notesInternal": ""
       },
@@ -4340,7 +4339,7 @@
         "phone": "(42) 3532-0000",
         "whatsapp": "",
         "email": "",
-        "website": "https://agrosamas.com.br",
+        "website": "",
         "instagram": "@prefeiturasms",
         "facebook": ""
       },

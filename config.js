@@ -53,19 +53,6 @@ const CONFIG = {
     },
 
     // ============================================================
-    // BANNER AGROSAMAS
-    // Controle de exibição do banner promocional
-    // ============================================================
-    agrosamas: {
-        bannerAtivo: false,     // Mude para true para ativar o banner na home
-        ano: 2026,
-        dataInicio: '2026-09-17',
-        dataFim: '2026-09-21',
-        website: 'https://agrosamas.com.br',
-        instagram: '@agrosamas2026'
-    },
-
-    // ============================================================
     // GOOGLE MAPS
     // Configure sua API key para melhor performance
     // ============================================================
@@ -140,17 +127,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 link.href = socialLinks[platform];
             }
         });
-    }
-    
-    // Ativar banner AgroSamas se configurado
-    if (CONFIG.agrosamas && CONFIG.agrosamas.bannerAtivo) {
-        const banner = document.getElementById('agrosamas-banner');
-        if (banner) {
-            const fechouBanner = localStorage.getItem('agrosamas-banner-closed');
-            if (!fechouBanner) {
-                banner.classList.remove('agrosamas-hidden');
-            }
-        }
     }
     
     // Google Analytics

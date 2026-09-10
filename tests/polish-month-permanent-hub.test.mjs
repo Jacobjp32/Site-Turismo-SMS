@@ -12,7 +12,7 @@ const search = read("js/search-index.js");
 const sitemap = read("sitemap.xml");
 const home = read("index.html");
 const htmlFilesWithNav = [
-  "eventos.html", "galeria.html", "index.html", "local.html", "mapa-3d.html",
+  "agrosamas.html", "agrosamas-2026.html", "eventos.html", "galeria.html", "index.html", "local.html", "mapa-3d.html",
   "mapa-completo.html", "mapa-turistico.html", "mes-polones-2026.html", "mes-polones.html",
   "noticia.html", "noticias.html", "o-que-fazer.html", "onde-ficar.html", "para-o-trade.html",
   "portal-usuario.html", "reservas.html", "rotas-completas.html", "roteiro-ia.html",
@@ -87,11 +87,11 @@ test("home preserva policy e não restaura destaque temporário", () => {
 
 test("consumidores usam geração coerente de cache", () => {
   for (const path of htmlFilesWithNav) {
-    assert.match(read(path), /js\/nav-shared\.js\?v=site-polish-hub-20260901/, path);
+    assert.match(read(path), /js\/nav-shared\.js\?v=site-agrosamas-hub-20260909-r2/, path);
   }
-  assert.match(read("index.html"), /js\/search-index\.js\?v=site-polish-hub-20260901/);
-  assert.match(nav, /js\/search-index\.js[\s\S]*?site-polish-hub-20260901/);
+  assert.match(read("index.html"), /js\/search-index\.js\?v=site-agrosamas-hub-20260909-r2/);
+  assert.match(nav, /js\/search-index\.js[\s\S]*?site-agrosamas-hub-20260909-r2/);
   for (const path of htmlFilesWithNav) {
-    assert.doesNotMatch(read(path), /js\/nav-shared\.js\?v=(?!site-polish-hub-20260901)/, path);
+    assert.doesNotMatch(read(path), /js\/nav-shared\.js\?v=(?!site-agrosamas-hub-20260909-r2)/, path);
   }
 });

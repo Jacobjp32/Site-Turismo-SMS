@@ -9,6 +9,22 @@
     <priority>1.0</priority>
   </url>
 
+  <!-- Hub permanente do AgroSamas -->
+  <url>
+    <loc>https://turismo.saomateusdosul.pr.gov.br/agrosamas</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <!-- Edição 2026 do AgroSamas -->
+  <url>
+    <loc>https://turismo.saomateusdosul.pr.gov.br/agrosamas-2026</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
   <!-- Área cultural permanente do Mês Polonês -->
   <url>
     <loc>https://turismo.saomateusdosul.pr.gov.br/mes-polones</loc>

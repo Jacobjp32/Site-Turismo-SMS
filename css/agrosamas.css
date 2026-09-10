@@ -1,0 +1,468 @@
+.agro-hub-page {
+    --agro-hub-sage: #94a184;
+}
+
+.agro-hub-hero {
+    align-items: end;
+    background:
+        linear-gradient(90deg, rgba(23, 34, 29, 0.98) 0%, rgba(23, 34, 29, 0.82) 46%, rgba(23, 34, 29, 0.32) 100%),
+        url("../images/RUA_DO_MATHE.jpg") center 46% / cover;
+    color: var(--agro-white);
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+    min-height: 650px;
+    overflow: hidden;
+    padding: clamp(4rem, 8vw, 7rem) max(1.5rem, calc((100vw - var(--agro-max)) / 2));
+    position: relative;
+}
+
+.agro-hub-hero::after {
+    border: 1px solid rgba(231, 182, 79, 0.42);
+    border-radius: 50%;
+    content: "";
+    height: min(62vw, 730px);
+    position: absolute;
+    right: -15vw;
+    top: -32vw;
+    width: min(62vw, 730px);
+}
+
+.agro-hub-hero__content,
+.agro-hub-hero__marker {
+    position: relative;
+    z-index: 1;
+}
+
+.agro-hub-hero__content {
+    max-width: 760px;
+}
+
+.agro-hub-hero h1 {
+    font-family: var(--agro-display);
+    font-size: clamp(4.6rem, 8vw, 8rem);
+    letter-spacing: -0.075em;
+    line-height: 0.78;
+    margin: 1.4rem 0 2rem;
+    text-transform: uppercase;
+}
+
+.agro-hub-hero h1 small {
+    color: var(--agro-harvest);
+    display: block;
+    font-family: var(--agro-body);
+    font-size: clamp(0.82rem, 1.4vw, 1.05rem);
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    line-height: 1.35;
+    margin-top: 1.45rem;
+}
+
+.agro-hub-hero__lead {
+    color: rgba(255, 253, 248, 0.78);
+    font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+    line-height: 1.7;
+    max-width: 680px;
+}
+
+.agro-hub-hero__actions,
+.agro-hub-closing__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-top: 2rem;
+}
+
+.agro-hub-hero__marker {
+    align-self: center;
+    border-left: 1px solid rgba(255, 253, 248, 0.28);
+    justify-self: end;
+    padding-left: clamp(1.5rem, 4vw, 4rem);
+}
+
+.agro-hub-hero__marker span {
+    color: var(--agro-harvest);
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 850;
+    letter-spacing: 0.16em;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+.agro-hub-hero__marker strong {
+    font-family: var(--agro-display);
+    font-size: clamp(3.4rem, 7vw, 7.2rem);
+    letter-spacing: -0.07em;
+    line-height: 0.72;
+}
+
+.agro-hub-edition {
+    background: var(--agro-harvest);
+    display: grid;
+    gap: clamp(2rem, 6vw, 6rem);
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    padding: clamp(4.5rem, 8vw, 8rem) max(1.5rem, calc((100vw - var(--agro-max)) / 2));
+}
+
+.agro-hub-edition__intro h2,
+.agro-hub-event__heading h2,
+.agro-hub-destination__copy h2,
+.agro-hub-archive h2 {
+    font-family: var(--agro-display);
+    font-size: clamp(2.8rem, 6vw, 5.8rem);
+    letter-spacing: -0.065em;
+    line-height: 0.88;
+    margin: 1rem 0 1.5rem;
+    text-transform: uppercase;
+}
+
+.agro-hub-edition__intro > p:not(.agro-kicker),
+.agro-hub-event__heading > p:not(.agro-kicker),
+.agro-hub-destination__copy > p:not(.agro-kicker),
+.agro-hub-archive > div > p:not(.agro-kicker) {
+    font-size: 1.05rem;
+    line-height: 1.75;
+}
+
+.agro-hub-edition__intro .agro-button {
+    margin-top: 2rem;
+}
+
+.agro-hub-edition__logo {
+    display: block;
+    height: auto;
+    margin-bottom: 1.7rem;
+    max-width: 190px;
+    object-fit: contain;
+    width: min(42vw, 190px);
+}
+
+.agro-hub-edition__announcement {
+    align-items: center;
+    background: var(--agro-ink);
+    color: var(--agro-white);
+    display: grid;
+    gap: 0.35rem 1rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    margin-top: 1.6rem;
+    padding: 1.2rem 1.3rem;
+}
+
+.agro-hub-edition__announcement span {
+    color: rgba(255, 253, 248, 0.66);
+    font-size: 0.65rem;
+    font-weight: 800;
+    grid-column: 1 / -1;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.agro-hub-edition__announcement strong {
+    font-family: var(--agro-display);
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    letter-spacing: -0.045em;
+    line-height: 0.9;
+    text-transform: uppercase;
+}
+
+.agro-hub-edition__announcement time {
+    color: var(--agro-harvest);
+    font-size: 0.76rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+}
+
+.agro-hub-edition__facts {
+    align-content: start;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.agro-hub-edition__facts article {
+    border-left: 1px solid rgba(23, 34, 29, 0.35);
+    border-top: 1px solid rgba(23, 34, 29, 0.35);
+    min-height: 145px;
+    padding: 1.4rem;
+}
+
+.agro-hub-edition__facts article:nth-child(odd) {
+    border-left: 0;
+}
+
+.agro-hub-edition__facts span {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 850;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.65rem;
+    text-transform: uppercase;
+}
+
+.agro-hub-edition__facts strong {
+    display: block;
+    font-size: clamp(1.1rem, 2vw, 1.55rem);
+    line-height: 1.25;
+}
+
+.agro-hub-event {
+    background: var(--agro-paper);
+    display: grid;
+    gap: clamp(3rem, 7vw, 7rem);
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    padding: clamp(5rem, 9vw, 9rem) max(1.5rem, calc((100vw - var(--agro-max)) / 2));
+}
+
+.agro-hub-event__grid {
+    display: grid;
+    gap: 1px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.agro-hub-pillar {
+    background: var(--agro-white);
+    min-height: 245px;
+    padding: clamp(1.4rem, 3vw, 2.4rem);
+}
+
+.agro-hub-pillar--large {
+    background: var(--agro-ink);
+    color: var(--agro-white);
+    grid-row: span 2;
+    min-height: 491px;
+}
+
+.agro-hub-pillar span {
+    color: var(--agro-rust);
+    font-size: 0.68rem;
+    font-weight: 850;
+    letter-spacing: 0.14em;
+}
+
+.agro-hub-pillar h3 {
+    font-family: var(--agro-display);
+    font-size: clamp(2rem, 4vw, 4rem);
+    letter-spacing: -0.055em;
+    line-height: 0.9;
+    margin: 3.5rem 0 1rem;
+    text-transform: uppercase;
+}
+
+.agro-hub-pillar p {
+    line-height: 1.6;
+}
+
+.agro-hub-destination {
+    background: var(--agro-ink);
+    color: var(--agro-white);
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr);
+    min-height: 680px;
+}
+
+.agro-hub-destination__media {
+    background: linear-gradient(90deg, rgba(23, 34, 29, 0.08), rgba(23, 34, 29, 0.72)), url("../images/WEBP/RUA-DO-MATHE-_1_.webp") center / cover;
+}
+
+.agro-hub-destination__copy {
+    align-self: center;
+    padding: clamp(3rem, 7vw, 7rem);
+}
+
+.agro-hub-destination__copy > p:not(.agro-kicker) {
+    color: rgba(255, 253, 248, 0.72);
+}
+
+.agro-hub-destination .agro-text-link {
+    color: var(--agro-harvest);
+    margin-top: 2rem;
+}
+
+.agro-hub-explore {
+    padding-bottom: clamp(5rem, 9vw, 9rem);
+}
+
+.agro-hub-archive {
+    align-items: end;
+    background: var(--agro-straw);
+    display: grid;
+    gap: clamp(2rem, 7vw, 7rem);
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.65fr);
+    padding: clamp(5rem, 9vw, 9rem) max(1.5rem, calc((100vw - var(--agro-max)) / 2));
+}
+
+.agro-hub-archive-card {
+    background: var(--agro-ink);
+    color: var(--agro-white);
+    display: grid;
+    min-height: 360px;
+    padding: 2rem;
+    position: relative;
+    text-decoration: none;
+    transition: transform 180ms ease, background-color 180ms ease;
+}
+
+.agro-hub-archive-card:hover {
+    background: var(--agro-rust-dark);
+    transform: translateY(-5px);
+}
+
+.agro-hub-archive-card span,
+.agro-hub-archive-card small {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.agro-hub-archive-card strong {
+    align-self: center;
+    color: var(--agro-harvest);
+    font-family: var(--agro-display);
+    font-size: clamp(5rem, 10vw, 8rem);
+    letter-spacing: -0.06em;
+}
+
+.agro-hub-archive-card i {
+    font-size: 2rem;
+    font-style: normal;
+    position: absolute;
+    right: 2rem;
+    top: 2rem;
+}
+
+.agro-hub-official {
+    margin-top: 0;
+}
+
+.agro-hub-closing .agro-closing__photo {
+    background-image: linear-gradient(90deg, rgba(23, 34, 29, 0.98) 0%, rgba(23, 34, 29, 0.72) 50%, rgba(23, 34, 29, 0.2) 100%), url("../images/PONTE_SOB_O_RIO_IGUACU.jpg");
+}
+
+@media (max-width: 1050px) {
+    .agro-hub-hero,
+    .agro-hub-edition,
+    .agro-hub-event,
+    .agro-hub-destination,
+    .agro-hub-archive {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .agro-hub-hero__marker {
+        display: none;
+    }
+
+    .agro-hub-edition__facts {
+        max-width: 760px;
+    }
+
+    .agro-hub-destination__media {
+        min-height: 480px;
+    }
+
+    .agro-hub-archive-card {
+        max-width: 620px;
+    }
+}
+
+@media (max-width: 820px) {
+    .agro-hub-hero {
+        min-height: 610px;
+    }
+
+    .agro-hub-event__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .agro-hub-pillar,
+    .agro-hub-pillar--large {
+        grid-row: auto;
+        min-height: 260px;
+    }
+
+    .agro-hub-destination__media {
+        min-height: 380px;
+    }
+}
+
+@media (max-width: 560px) {
+    .agro-hub-hero {
+        align-items: center;
+        min-height: 650px;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .agro-hub-hero h1 {
+        font-size: clamp(3rem, 13vw, 4.8rem);
+    }
+
+    .agro-hub-hero__actions,
+    .agro-hub-closing__actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .agro-hub-hero .agro-button,
+    .agro-hub-closing .agro-button,
+    .agro-hub-edition .agro-button {
+        align-self: stretch;
+    }
+
+    .agro-hub-edition,
+    .agro-hub-event,
+    .agro-hub-archive {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .agro-hub-edition__facts {
+        grid-template-columns: 1fr;
+    }
+
+    .agro-hub-edition__logo {
+        width: min(50vw, 170px);
+    }
+
+    .agro-hub-edition__facts article,
+    .agro-hub-edition__facts article:nth-child(odd) {
+        border-left: 0;
+    }
+
+    .agro-hub-destination__media {
+        min-height: 310px;
+    }
+
+    .agro-hub-destination__copy {
+        padding: 4rem 1rem;
+    }
+
+    .agro-hub-archive {
+        align-items: stretch;
+    }
+
+    .agro-hub-archive-card {
+        min-height: 310px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .agro-hub-archive-card {
+        transition: none;
+    }
+
+    .agro-hub-archive-card:hover {
+        transform: none;
+    }
+}
+
+body.high-contrast .agro-hub-hero,
+body.high-contrast .agro-hub-edition,
+body.high-contrast .agro-hub-event,
+body.high-contrast .agro-hub-pillar,
+body.high-contrast .agro-hub-destination,
+body.high-contrast .agro-hub-archive,
+body.high-contrast .agro-hub-archive-card {
+    background: #000 !important;
+    border-color: #ff0 !important;
+    color: #ff0 !important;
+}

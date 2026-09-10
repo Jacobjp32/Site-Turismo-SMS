@@ -2631,201 +2631,6 @@ body.nav-menu-open .nav-toggle {
         }
 
 /* ============================================================ */
-/* BLOCO 2: BANNER AGROSAMAS — Modal de evento especial */
-/* Origem: index.html linhas 3427–3617 */
-/* ============================================================ */
-
-        /* AgroSamas Banner Styles */
-        .agrosamas-banner {
-            background: linear-gradient(135deg, #1a5f4a 0%, #0d3d2e 50%, #1a1a2e 100%);
-            padding: 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .agrosamas-banner::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            opacity: 0.3;
-        }
-        
-        /* Classe para esconder o banner */
-        .agrosamas-hidden {
-            display: none !important;
-        }
-        
-        .agrosamas-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .agrosamas-content {
-            text-align: center;
-            color: white;
-        }
-        
-        .agrosamas-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #ffd700, #ffaa00);
-            color: #1a1a2e;
-            padding: 0.5rem 1.5rem;
-            border-radius: 30px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
-        .agrosamas-title {
-            font-family: var(--font-display);
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .agrosamas-subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin-bottom: 1.5rem;
-        }
-        
-        .agrosamas-info {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            flex-wrap: wrap;
-            margin-bottom: 1.5rem;
-        }
-        
-        .agrosamas-info span {
-            background: rgba(255,255,255,0.15);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.95rem;
-        }
-        
-        .agrosamas-highlights {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-bottom: 2rem;
-        }
-        
-        .agrosamas-highlights span {
-            background: rgba(255,215,0,0.2);
-            border: 1px solid rgba(255,215,0,0.4);
-            padding: 0.4rem 1rem;
-            border-radius: 15px;
-            font-size: 0.9rem;
-        }
-        
-        .agrosamas-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        .agrosamas-btn {
-            padding: 1rem 2rem;
-            border-radius: 30px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .agrosamas-btn.primary {
-            background: linear-gradient(135deg, #ffd700, #ffaa00);
-            color: #1a1a2e;
-        }
-        
-        .agrosamas-btn.primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(255,215,0,0.4);
-        }
-        
-        .agrosamas-btn.secondary {
-            background: transparent;
-            border: 2px solid white;
-            color: white;
-        }
-        
-        .agrosamas-btn.secondary:hover {
-            background: white;
-            color: #1a1a2e;
-        }
-        
-        .agrosamas-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .agrosamas-close:hover {
-            background: rgba(255,255,255,0.3);
-            transform: rotate(90deg);
-        }
-        
-        @media (max-width: 768px) {
-            .agrosamas-banner {
-                padding: 1.5rem 1rem;
-            }
-            
-            .agrosamas-title {
-                font-size: 2rem;
-            }
-            
-            .agrosamas-info {
-                gap: 0.5rem;
-            }
-            
-            .agrosamas-info span {
-                font-size: 0.85rem;
-                padding: 0.4rem 0.8rem;
-            }
-            
-            .agrosamas-highlights span {
-                font-size: 0.8rem;
-            }
-            
-            .agrosamas-btn {
-                padding: 0.8rem 1.5rem;
-                font-size: 0.9rem;
-            }
-        }
-
-/* ============================================================ */
 /* BLOCO 3: DIORAMA — Imagem artística da cidade */
 /* Origem: index.html linhas 3720–3822 */
 /* ============================================================ */
@@ -3105,6 +2910,55 @@ body.nav-menu-open .nav-toggle {
         .festa-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(212, 165, 116, 0.4);
+        }
+
+        .festa-featured-attraction {
+            align-items: center;
+            background: #17221d;
+            color: #fff;
+            display: grid;
+            gap: 0.2rem 0.75rem;
+            grid-template-columns: minmax(0, 1fr) auto;
+            margin: 0 0 1rem;
+            padding: 0.85rem 1rem;
+        }
+
+        .festa-featured-attraction > span {
+            color: rgba(255, 255, 255, 0.68);
+            font-size: 0.62rem;
+            font-weight: 700;
+            grid-column: 1 / -1;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .festa-featured-attraction strong {
+            font-size: 1.05rem;
+        }
+
+        .festa-featured-attraction time {
+            color: #e7b64f;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+        }
+
+        .festa-actions {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .festa-secondary-link {
+            color: #0a3d2e;
+            font-size: 0.9rem;
+            font-weight: 700;
+            justify-self: center;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.25rem;
+        }
+
+        .festa-secondary-link:hover {
+            color: #7a4c2d;
         }
 
         .festas-cta {

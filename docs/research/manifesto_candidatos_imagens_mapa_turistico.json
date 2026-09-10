@@ -1,0 +1,455 @@
+{
+  "gerado_em": "2026-09-06T21:27:55",
+  "finalidade": "Triagem de imagens candidatas para empreendimentos sem foto no Mapa Turístico de São Mateus do Sul",
+  "aviso": "Ter uma URL pública não concede automaticamente direito de republicação. Confirmar autorização/licença antes de colocar no portal oficial.",
+  "total_blocos_com_imagens": 11,
+  "total_urls_imagem": 44,
+  "candidatos": [
+    {
+      "empreendimento": "Artur Biergarten",
+      "fonte": "https://p97.com.br/atencao-sao-mateus-do-sul-novidade-gastronomica-chega-a-cidade-com-o-artur-biergarten/",
+      "direitos_status": "IMPRENSA — pedir autorização ao P97/empreendimento antes de republicar",
+      "confianca_identificacao": "ALTA",
+      "observacao": "Matéria dedicada ao empreendimento, em São Mateus do Sul.",
+      "imagens": [
+        "https://p97.com.br/wp-content/uploads/2024/08/2a9bbc5493c82b65f682c81a792adcc3.jpeg",
+        "https://p97.com.br/wp-content/uploads/2024/08/d123bd11ea0bed6e8cc0556ae0954f4e-1024x768.jpeg",
+        "https://p97.com.br/wp-content/uploads/2024/08/143e87434e61c876f5e8efee307502f1-1024x461.jpeg",
+        "https://p97.com.br/wp-content/uploads/2024/08/fd1c9527f9ff08c2c1c2460a7a8ce8e6-1024x768.jpeg",
+        "https://p97.com.br/wp-content/uploads/2024/08/aa7f3f67026d7ad412571d2d4b2a1973-1024x461.jpeg",
+        "https://p97.com.br/wp-content/uploads/2024/08/825feee9a22beb31c0fd3356ce20953b-1024x461.jpeg",
+        "https://p97.com.br/wp-content/uploads/2024/08/11bd143d9527b14f831b9653848f0419-1024x461.jpeg"
+      ]
+    },
+    {
+      "empreendimento": "Viveiro MK",
+      "fonte": "https://p97.com.br/",
+      "direitos_status": "IMPRENSA — pedir autorização ao P97/empreendimento antes de republicar",
+      "confianca_identificacao": "ALTA",
+      "observacao": "Fotos da reportagem sobre o Viveiro MK em São Mateus do Sul.",
+      "imagens": [
+        "https://p97.com.br/wp-content/uploads/2024/07/759b7e8f9119fa0c2cff5ef679125c87-1024x683.jpeg",
+        "https://p97.com.br/wp-content/uploads/2024/07/ee45b286830005b02e1d382baf068aee-scaled.jpg",
+        "https://p97.com.br/wp-content/uploads/2024/07/4f4b8d233b29e8311b72c7815e477922-300x200.jpeg",
+        "https://p97.com.br/wp-content/uploads/2024/07/823a7764af4e1d9cb009ff970b558541-300x200.jpg",
+        "https://p97.com.br/wp-content/uploads/2024/07/32646434aa80dd761be64dd7b71a8260-300x200.jpeg",
+        "https://p97.com.br/wp-content/uploads/2024/07/bb5116d2eee9854ae3e6eab6b45ca3ce-300x200.jpg",
+        "https://p97.com.br/wp-content/uploads/2024/07/26af1f014749a60989eb8cbb30dbcf55-scaled.jpg"
+      ]
+    },
+    {
+      "empreendimento": "Ervateira Taquaral",
+      "fonte": "https://ervateirataquaral.com.br/empresa/",
+      "direitos_status": "SITE OFICIAL — solicitar autorização à empresa para o portal municipal",
+      "confianca_identificacao": "ALTA",
+      "observacao": "O site oficial também publicou em 21/06/2026 uma galeria com 6 fotos de visita às instalações.",
+      "imagens": [
+        "https://ervateirataquaral.com.br/wp-content/uploads/2023/05/TBT_Historia-05.jpg",
+        "https://ervateirataquaral.com.br/wp-content/uploads/2023/05/TBT_Historia-04.jpg",
+        "https://ervateirataquaral.com.br/wp-content/uploads/2023/05/TBT_Historia-03.jpg",
+        "https://ervateirataquaral.com.br/wp-content/uploads/2023/05/TBT_Historia-02.jpg"
+      ]
+    },
+    {
+      "empreendimento": "Vivenda do Mate",
+      "fonte": "https://vivendadomate.com.br/",
+      "direitos_status": "SITE OFICIAL — solicitar autorização à empresa para o portal municipal",
+      "confianca_identificacao": "ALTA para marca / MÉDIA para uso como foto do local",
+      "observacao": "Priorizar depois fotos do espaço/produção no Instagram oficial @vivendadomate.",
+      "imagens": [
+        "https://assets.zyrosite.com/cdn-cgi/image/format%3Dauto%2Cw%3D1440%2Ch%3D377%2Cfit%3Dcrop/ALpb85yz96FkxGxG/vivenda-banner-site-1-mP4pnygK84cLyKyD.png",
+        "https://assets.zyrosite.com/cdn-cgi/image/format%3Dauto%2Cw%3D768%2Ch%3D512%2Cfit%3Dcrop/ALpb85yz96FkxGxG/yampi---celular-dWx0n28yKWcx1GxQ.jpg",
+        "https://assets.zyrosite.com/cdn-cgi/image/format%3Dauto%2Cw%3D375%2Ch%3D283%2Cfit%3Dcrop/ALpb85yz96FkxGxG/cha-mxB8zKRNyOsqBeML.png",
+        "https://assets.zyrosite.com/cdn-cgi/image/format%3Dauto%2Cw%3D375%2Ch%3D300%2Cfit%3Dcrop/ALpb85yz96FkxGxG/pratos-d95rMnxjOQTXNnn2.png",
+        "https://assets.zyrosite.com/cdn-cgi/image/format%3Dauto%2Cw%3D375%2Ch%3D300%2Cfit%3Dcrop/ALpb85yz96FkxGxG/drinks-mjE5zKnKMMf7DBy4.png",
+        "https://assets.zyrosite.com/cdn-cgi/image/format%3Dauto%2Cw%3D375%2Ch%3D283%2Cfit%3Dcrop/ALpb85yz96FkxGxG/terere-Yg257KRKDjSo1X1X.png",
+        "https://assets.zyrosite.com/cdn-cgi/image/format%3Dauto%2Cw%3D375%2Ch%3D283%2Cfit%3Dcrop/ALpb85yz96FkxGxG/chimarrapso-01-AzGDOKlKqBCJkzBG.png"
+      ]
+    },
+    {
+      "empreendimento": "Parada Pinoli",
+      "fonte": "https://postoamigao.com.br/nossa-estrutura.php",
+      "direitos_status": "SITE OFICIAL DO COMPLEXO — solicitar autorização ao empreendimento",
+      "confianca_identificacao": "ALTA",
+      "observacao": "A página identifica esta imagem especificamente como Restaurante Pinoli, anexo ao posto.",
+      "imagens": [
+        "https://postoamigao.com.br/img/estrutura/estrutura15.jpg?v=1786044446"
+      ]
+    },
+    {
+      "empreendimento": "Parada Pinoli",
+      "fonte": "https://portalrdx.com.br/",
+      "direitos_status": "IMPRENSA — pedir autorização ao Portal RDX/empreendimento",
+      "confianca_identificacao": "ALTA",
+      "observacao": "Reportagem dedicada à Parada Pinoli. Escolher depois as fotos mais representativas do espaço.",
+      "imagens": [
+        "https://portalrdx.com.br/wp-content/uploads/2022/07/WhatsApp-Image-2022-07-06-at-10.15.35-3-1024x576.jpeg",
+        "https://portalrdx.com.br/wp-content/uploads/2022/07/IMG_2327-1024x683.jpg",
+        "https://portalrdx.com.br/wp-content/uploads/2022/07/IMG_2329-1024x683.jpg",
+        "https://portalrdx.com.br/wp-content/uploads/2022/07/IMG_2334-1024x683.jpg",
+        "https://portalrdx.com.br/wp-content/uploads/2022/07/IMG_2389-683x1024.jpg",
+        "https://portalrdx.com.br/wp-content/uploads/2022/07/IMG_2307-1024x683.jpg",
+        "https://portalrdx.com.br/wp-content/uploads/2022/07/IMG_2308-1024x683.jpg",
+        "https://portalrdx.com.br/wp-content/uploads/2022/07/IMG_2310-1024x683.jpg"
+      ]
+    },
+    {
+      "empreendimento": "Posto Pelanda — São Mateus",
+      "fonte": "https://postospelanda.com.br/",
+      "direitos_status": "SITE OFICIAL — solicitar autorização à rede",
+      "confianca_identificacao": "ALTA",
+      "observacao": "Foto identificada pelo próprio arquivo como unidade São Mateus. Não confundir com a unidade Pelanda Maestro.",
+      "imagens": [
+        "https://postospelanda.com.br/wp-content/uploads/2024/12/POSTO-PELANDA-SAO-MATEUS.jpg"
+      ]
+    },
+    {
+      "empreendimento": "BierHerr",
+      "fonte": "https://portalrdx.com.br/",
+      "direitos_status": "IMPRENSA — pedir autorização ao Portal RDX/empreendimento",
+      "confianca_identificacao": "ALTA",
+      "observacao": "Imagem vinculada a matéria sobre a BierHerr.",
+      "imagens": [
+        "https://portalrdx.com.br/wp-content/uploads/2023/08/WhatsApp-Image-2023-08-29-at-13.14.20-1024x768.jpeg"
+      ]
+    },
+    {
+      "empreendimento": "Hotel Dom Leopoldo",
+      "fonte": "https://hotel-dom-leopoldo.hoteisdoparana.com/pt/",
+      "direitos_status": "TERCEIRO — usar apenas como referência; preferir original fornecido pelo hotel",
+      "confianca_identificacao": "ALTA",
+      "observacao": "Fachada do hotel claramente identificável.",
+      "imagens": [
+        "https://hotel-dom-leopoldo.hoteisdoparana.com/data/Images/OriginalPhoto/16143/1614367/1614367024/image-sao-mateus-do-sul-hotel-dom-leopoldo-1.JPEG"
+      ]
+    },
+    {
+      "empreendimento": "Baldo S/A",
+      "fonte": "https://www.parana.pr.gov.br/Galeria-de-Imagens/Tradicional-erva-mate-de-Sao-Mateus-do-Sul-se-reinventa-e-ganha-novos-mercados",
+      "direitos_status": "GOVERNO/AEN — verificar condições de crédito/republicação",
+      "confianca_identificacao": "ALTA",
+      "observacao": "Galeria estadual relacionada à produção de erva-mate em São Mateus do Sul; filename associa a imagem à Baldo.",
+      "imagens": [
+        "https://www.parana.pr.gov.br/sites/default/arquivos_restritos/files/imagem/2023-10/erva_mate_baldo_sao_mateus-17.jpg"
+      ]
+    },
+    {
+      "empreendimento": "Pesqueiro da Joana",
+      "fonte": "https://pr.mgfimoveis.com.br/aluguel-pr-sao-mateus-do-sul-pesqueiro-joana-casas-para-alugar-5-entrada-por-63612519",
+      "direitos_status": "ANÚNCIO DE TERCEIRO — confirmar com proprietária e pedir originais antes de republicar",
+      "confianca_identificacao": "ALTA para identidade / BAIXA para licença",
+      "observacao": "O anúncio lista seis fotos especificamente como Pesqueiro da Joana.",
+      "imagens": [
+        "https://img.olx.com.br/images/55/558611085918820.jpg",
+        "https://img.olx.com.br/images/55/554611089853980.jpg",
+        "https://img.olx.com.br/images/55/556611089076302.jpg",
+        "https://img.olx.com.br/images/55/555611084650795.jpg",
+        "https://img.olx.com.br/images/55/552611083329196.jpg",
+        "https://img.olx.com.br/images/55/551611088485979.jpg"
+      ]
+    }
+  ],
+  "fontes_sem_asset_direto": [
+    {
+      "empreendimento": "Hotel Nora",
+      "fonte": "Google Hotels / antigo portal turístico municipal",
+      "status": "Galeria encontrada (9+ fotos); ainda sem URL original segura extraída.",
+      "prioridade": "ALTA"
+    },
+    {
+      "empreendimento": "Hotel Moro",
+      "fonte": "Google Hotels / TripAdvisor",
+      "status": "Galeria encontrada (9+ fotos); ainda sem URL original segura extraída.",
+      "prioridade": "ALTA"
+    },
+    {
+      "empreendimento": "Rancho Samas",
+      "fonte": "Restaurant Guru / Instagram @ranchosamas",
+      "status": "Galeria pública encontrada com dezenas de fotos; pedir originais ao empreendimento.",
+      "prioridade": "ALTA"
+    },
+    {
+      "empreendimento": "Ervateira Rei Verde",
+      "fonte": "https://reiverde.com.br/unidade-sao-mateus-do-sul/",
+      "status": "Página oficial da unidade confirmada; imagens disponíveis, mas as que extraí até agora não são uma boa foto de fachada/instalação.",
+      "prioridade": "ALTA"
+    },
+    {
+      "empreendimento": "Frigorífico 3M",
+      "fonte": "https://www.foodbevg.com/BR/S%C3%A3o-Mateus-do-Sul/1584264175203339/Frigorifico-3M",
+      "status": "Página com várias imagens e endereço/identidade confirmados; origem é espelho de rede social, então preferir pedir os originais.",
+      "prioridade": "ALTA"
+    },
+    {
+      "empreendimento": "Pitayas Dragão do Iguaçu",
+      "fonte": "Instagram @pitayasdragaodoiguacu / perfil empresarial local",
+      "status": "Identidade e localização confirmadas; imagens não ficaram indexadas de modo confiável para extração direta.",
+      "prioridade": "ALTA"
+    },
+    {
+      "empreendimento": "Pesqueiro Tio Ivo",
+      "fonte": "Portal RDX / Instagram @pesqueirotioivo2024",
+      "status": "Identidade e telefone confirmados; ainda sem arquivo direto confiável.",
+      "prioridade": "MÉDIA"
+    },
+    {
+      "empreendimento": "Pesqueiro do Kiko",
+      "fonte": "Guias locais / telefone cadastrado",
+      "status": "Identidade confirmada; ainda sem arquivo direto confiável.",
+      "prioridade": "MÉDIA"
+    },
+    {
+      "empreendimento": "Pesqueiro do Luizão",
+      "fonte": "Guias locais / Instagram @pesqueiro._do_.luizao",
+      "status": "Identidade confirmada; ainda sem arquivo direto confiável.",
+      "prioridade": "MÉDIA"
+    },
+    {
+      "empreendimento": "Área de Lazer Ulbrich",
+      "fonte": "Portal RDX / Instagram @ulbrichareadelazer",
+      "status": "Local confirmado em reportagem e cadastro; reportagem encontrada usa imagem ilustrativa, não serve como foto do empreendimento.",
+      "prioridade": "MÉDIA"
+    },
+    {
+      "empreendimento": "Viveiro Fluviópolis",
+      "fonte": "Embrapa (cadastro de viveiros)",
+      "status": "Telefone do cadastro turístico coincide com viveiro de Simoni S. Chichoki em Fluviópolis; ainda sem foto pública confiável.",
+      "prioridade": "MÉDIA"
+    }
+  ],
+  "fallbacks_acervo_municipal": [
+    {
+      "nome": "Caminhos de Fluviópolis — rota turística",
+      "url": "https://turismo.saomateusdosul.pr.gov.br/images/WEBP/ROTA-TURISTICA-FLUVIOPOLIS-_1_.webp",
+      "uso": "Fallback municipal para empreendimentos de Fluviópolis quando ainda não houver foto específica."
+    },
+    {
+      "nome": "Fluviópolis — paisagem rural",
+      "url": "https://turismo.saomateusdosul.pr.gov.br/images/WEBP/ROTA-TURISTICA-FLUVIOPOLIS-_2_.webp",
+      "uso": "Fallback municipal de contexto territorial; não apresentar como fotografia de um empreendimento específico."
+    },
+    {
+      "nome": "Rotas Rurais",
+      "url": "https://turismo.saomateusdosul.pr.gov.br/images/FUNDO_ROTAS.jpg",
+      "uso": "Fallback municipal geral para rota rural."
+    },
+    {
+      "nome": "Vida no Campo",
+      "url": "https://turismo.saomateusdosul.pr.gov.br/images/IMG_2301.jpg",
+      "uso": "Fallback municipal de contexto rural; validar o conteúdo visual antes de associar a qualquer local."
+    }
+  ],
+  "cobertura_41_cadastros_sem_imagem": [
+    {
+      "empreendimento": "Dalety — Queijos e Doces",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Instagram cadastrado: @dalety_queijosedoces; sem asset web indexado com segurança."
+    },
+    {
+      "empreendimento": "Cabana Campo de Telha",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Cadastro da rota confirmado; busca pública não retornou fotografia inequívoca."
+    },
+    {
+      "empreendimento": "Ervateira Rei Verde",
+      "status": "FONTE/GALERIA LOCALIZADA; ASSET DIRETO PENDENTE",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Baldo S/A",
+      "status": "URL(S) DIRETA(S) RECUPERADA(S)",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Parada do Chimarrão",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Instagram cadastrado: @paradadochimarrao476; ainda sem asset direto indexado confiável."
+    },
+    {
+      "empreendimento": "Ervateira Taquaral",
+      "status": "URL(S) DIRETA(S) RECUPERADA(S)",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Vivenda do Mate",
+      "status": "URL(S) DIRETA(S) RECUPERADA(S)",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Viveiro Santana",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Cadastro/telefone da rota confirmados; sem fotografia pública inequívoca encontrada."
+    },
+    {
+      "empreendimento": "BierHerr",
+      "status": "URL(S) DIRETA(S) RECUPERADA(S)",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Armazém Campestre",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Cadastro da rota confirmado; resultados homônimos de outras cidades foram descartados."
+    },
+    {
+      "empreendimento": "Queijos Artesanais da Cleonice",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Cadastro da rota confirmado; resultados homônimos foram descartados."
+    },
+    {
+      "empreendimento": "Propriedade da Inês e do Lucival",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Cadastro da rota confirmado; sem fotografia pública inequívoca."
+    },
+    {
+      "empreendimento": "Artur Biergarten",
+      "status": "URL(S) DIRETA(S) RECUPERADA(S)",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Área de Lazer Ulbrich",
+      "status": "FONTE/GALERIA LOCALIZADA; ASSET DIRETO PENDENTE",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Pesqueiro Tio Ivo",
+      "status": "FONTE/GALERIA LOCALIZADA; ASSET DIRETO PENDENTE",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Pesqueiro da Joana",
+      "status": "URL(S) DIRETA(S) RECUPERADA(S)",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Pesqueiro do Luizão",
+      "status": "FONTE/GALERIA LOCALIZADA; ASSET DIRETO PENDENTE",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Pesqueiro do Kiko",
+      "status": "FONTE/GALERIA LOCALIZADA; ASSET DIRETO PENDENTE",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Rancho Samas",
+      "status": "FONTE/GALERIA LOCALIZADA; ASSET DIRETO PENDENTE",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Pesqueiro do Pedrão",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "O próprio cadastro marca como empreendimento potencial/em validação; não associar foto sem confirmação."
+    },
+    {
+      "empreendimento": "Frigorífico 3M",
+      "status": "FONTE/GALERIA LOCALIZADA; ASSET DIRETO PENDENTE",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Canil e CT São José",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Instagram cadastrado: @ctecanilsaojose06; ainda sem asset direto confiável."
+    },
+    {
+      "empreendimento": "Parada Pinoli",
+      "status": "URL(S) DIRETA(S) RECUPERADA(S)",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Hotel Moro",
+      "status": "FONTE/GALERIA LOCALIZADA; ASSET DIRETO PENDENTE",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Restaurante e Churrascaria Dallas",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Restaurant Guru possui página/fotos e o cadastro aponta @dallas_restaurante11; preferir originais do restaurante."
+    },
+    {
+      "empreendimento": "Propriedade Eduardo Pachek",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Cadastro da rota confirmado; sem fotografia pública inequívoca."
+    },
+    {
+      "empreendimento": "Pitayas Dragão do Iguaçu",
+      "status": "FONTE/GALERIA LOCALIZADA; ASSET DIRETO PENDENTE",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Posto Pelanda — São Mateus",
+      "status": "URL(S) DIRETA(S) RECUPERADA(S)",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Viveiro Fluviópolis",
+      "status": "FONTE/GALERIA LOCALIZADA; ASSET DIRETO PENDENTE",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Propriedade do Seu Luiz",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Empreendimento potencial/em validação; não associar imagem sem confirmação."
+    },
+    {
+      "empreendimento": "Sítio Pica-pau Vermelho",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Empreendimento potencial/em validação; não associar imagem sem confirmação."
+    },
+    {
+      "empreendimento": "Viveiro MK",
+      "status": "URL(S) DIRETA(S) RECUPERADA(S)",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Mag Verduras",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Cadastro/telefone confirmados na rota; sem fotografia pública inequívoca."
+    },
+    {
+      "empreendimento": "Propriedade do Tico",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Localização em validação no cadastro; sem fotografia pública inequívoca."
+    },
+    {
+      "empreendimento": "Sítio Sapopema",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Localização em validação no cadastro; sem fotografia pública inequívoca."
+    },
+    {
+      "empreendimento": "Propriedade da Sabrina",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Cadastro da rota confirmado; sem fotografia pública inequívoca."
+    },
+    {
+      "empreendimento": "Propriedade da Antonia e Gabriel",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Empreendimento potencial/em validação."
+    },
+    {
+      "empreendimento": "Propriedade do Beto",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Empreendimento potencial/em validação."
+    },
+    {
+      "empreendimento": "Sítio Ludevico",
+      "status": "SEM FOTO PÚBLICA INEQUÍVOCA ATÉ ESTA VARREDURA",
+      "nota": "Empreendimento potencial/em validação."
+    },
+    {
+      "empreendimento": "Hotel Nora",
+      "status": "FONTE/GALERIA LOCALIZADA; ASSET DIRETO PENDENTE",
+      "nota": ""
+    },
+    {
+      "empreendimento": "Hotel Dom Leopoldo",
+      "status": "URL(S) DIRETA(S) RECUPERADA(S)",
+      "nota": ""
+    }
+  ],
+  "resumo_cobertura": {
+    "cadastros_analisados": 41,
+    "empreendimentos_com_url_direta": 10,
+    "urls_diretas_catalogadas": 44,
+    "fallbacks_municipais_catalogados": 4
+  }
+}

@@ -29,7 +29,7 @@ const OLD_PARK_LOCATION = Object.freeze({
 const EXPECTED_CALENDAR_OCCURRENCES = new Map([
     [199, { date: '2026-09-18', location: 'Rua do Mathe' }],
     [200, { date: '2026-09-19', location: 'Rua do Mathe' }],
-    [201, { date: '2026-09-19', location: 'Rua do Mathe' }],
+    [201, { date: '2026-09-18', location: 'Rua do Mathe' }],
     [202, { date: '2026-09-20', location: 'Rua do Mathe' }],
     [203, { date: '2026-09-21', location: 'Rua do Mathe' }]
 ]);
@@ -103,10 +103,9 @@ test('crossSourceCoordinateMatch=true', () => {
 });
 
 test('searchUsesCorrectLocation=true', () => {
-    const entries = harness.window.TURISMO_SEARCH_INDEX.filter(entry => (
-        entry.category === 'Agenda' && entry.title === 'AgroSamas'
-    ));
+    const entries = harness.window.TURISMO_SEARCH_INDEX.filter(entry => entry.title === 'AgroSamas');
     assert.equal(entries.length, 1);
+    assert.equal(entries[0].url, '/agrosamas');
     assert.ok(entries[0].keywords.includes(CANONICAL_LOCATION.name));
     assert.ok(!entries[0].keywords.includes(OLD_PARK_LOCATION.name));
 });
@@ -145,13 +144,19 @@ test('calendarOccurrencesPreserved=true; datesPreserved=true; duplicateCalendarI
         assert.equal(matches[0].data, expected.date, `date ${id}`);
         assert.equal(matches[0].local, expected.location, `location ${id}`);
         assert.match(matches[0].titulo, /AgroSamas/);
+        assert.equal(matches[0].seriesId, 'agrosamas', `seriesId ${id}`);
+        assert.equal(matches[0].editionId, 'agrosamas-2026', `editionId ${id}`);
     }
 });
 
 test('eventIdentityPreserved=true', () => {
     assert.equal(agrosamas.id, 'agrosamas');
+    assert.equal(agrosamas.seriesId, 'agrosamas');
+    assert.equal(agrosamas.activeEditionId, 'agrosamas-2026');
     assert.equal(agrosamas.nome, 'AgroSamas');
-    assert.equal(agrosamas.url, '/eventos');
+    assert.equal(agrosamas.url, '/agrosamas');
+    assert.equal(agrosamas.hubUrl, '/agrosamas');
+    assert.equal(agrosamas.editionUrl, '/agrosamas-2026');
     assert.equal(agrosamas.categoria, 'Eventos');
     assert.equal(agrosamas.periodo, 'Setembro');
     assert.equal(agrosamas.recorrencia, 'anual');

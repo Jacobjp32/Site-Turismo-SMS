@@ -252,7 +252,7 @@ const locaisData = {
         nome: 'Arena Cultural',
         subtitulo: 'Cultura · Shows · Eventos',
         badge: '🎭 Cultura',
-        descricao: 'A Arena Cultural de São Mateus do Sul é o espaço destinado a shows, apresentações artísticas, espetáculos e eventos culturais da cidade. Com capacidade para grandes públicos, é palco de parte da programação do AgroSamas, do Natal Ouro Verde e de outros eventos ao longo do ano.',
+        descricao: 'A Arena Cultural de São Mateus do Sul é um espaço destinado a shows, apresentações artísticas, espetáculos e eventos culturais da cidade. Sua utilização varia conforme a programação de cada evento.',
         historia: 'Concebida para democratizar o acesso à cultura, a Arena Cultural consolidou-se como um dos principais equipamentos culturais de São Mateus do Sul, recebendo atrações locais, regionais e nacionais.',
         imagem: 'images/WEBP/PARQUE-DE-EXPOSICOES-ARENA-DE-ESPORTES-PORTAL-POLONES-_5_.webp',
         galeria: ['images/WEBP/PARQUE-DE-EXPOSICOES-ARENA-DE-ESPORTES-PORTAL-POLONES-_5_.webp', 'images/WEBP/PARQUE-DE-EXPOSICOES-ARENA-DE-ESPORTES-PORTAL-POLONES-_6_.webp', 'images/WEBP/PARQUE-DE-EXPOSICOES-ARENA-DE-ESPORTES-PORTAL-POLONES-_7_.webp'],

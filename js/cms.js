@@ -88,12 +88,13 @@ const CMS = {
         return [
             {
                 id: 1,
-                titulo: '5º AgroSamas 2026: Programação Completa Revelada',
-                slug: 'agrosamas-2026-programacao',
+                titulo: '5º AgroSamas será realizado de 18 a 21 de setembro de 2026',
+                slug: 'agrosamas-2026-datas-confirmadas',
                 categoria: 'Eventos',
-                resumo: 'O maior evento do município acontece de 17 a 21 de setembro com shows nacionais, feira gastronômica e exposição agropecuária.',
-                conteudo: 'O maior evento do município acontece de 17 a 21 de setembro com shows nacionais, feira gastronômica e exposição agropecuária. Confira todos os detalhes da programação que promete superar todas as edições anteriores.\n\nA 5ª edição do AgroSamas promete ser a maior de todas, com atrações para toda a família, entrada gratuita e muita diversão.',
+                resumo: 'A 5ª edição do AgroSamas acontece durante quatro dias, de 18 a 21 de setembro de 2026, na Rua do Mathe e entorno.',
+                conteudo: 'O 5º AgroSamas será realizado de 18 a 21 de setembro de 2026, na Rua do Mathe e entorno, em São Mateus do Sul.\n\nRoupa Nova está confirmado para 20 de setembro. Novas atrações serão divulgadas em breve pelos canais oficiais do evento.',
                 imagem: 'images/RUA_DO_MATHE.jpg',
+                linkOrigem: 'https://www.agrosamas.com.br/',
                 autor: 'Departamento de Turismo',
                 dataPublicacao: '2026-01-15T10:00:00',
                 destaque: true,

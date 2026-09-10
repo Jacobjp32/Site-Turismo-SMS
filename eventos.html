@@ -32,8 +32,10 @@
     <title>Eventos em São Mateus do Sul | Agenda Turística</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/shared.css?v=site-public-b1-20260708">
-    <link rel="stylesheet" href="css/eventos.css?v=site-public-b1-20260708">
+    <link rel="stylesheet" href="css/eventos.css?v=agro-05-20260910">
     <script src="js/scroll-animations.js?v=site-public-b1-20260708" defer></script>
+    <script src="js/data/agrosamas.js?v=agro-05-20260910" defer></script>
+    <script src="js/agrosamas-contract-bindings.js?v=agro-05-20260910" defer></script>
     <style>
     /* ── Mês nav compacto ── */
     .mes-nav { display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:1rem; }
@@ -159,7 +161,7 @@
     <link rel="stylesheet" href="css/tourism-mascot.css?v=site-public-b1-20260708">
 </head>
 <body>
-    <script src="js/nav-shared.js?v=site-polish-hub-20260901"></script>
+    <script src="js/nav-shared.js?v=site-agrosamas-hub-20260909-r2"></script>
 
     <section class="hero">
         <h1 data-lang-key="ev-hero-title">📅 Calendário de Eventos 2026</h1>
@@ -177,15 +179,20 @@
             <!-- AgroSamas destaque -->
             <div class="filter-card agrosamas-highlight">
                 <div class="agrosamas-card-header">
-                    <span class="agrosamas-card-badge" data-lang-key="ev-agrosamas-card-badge">⭐ DESTAQUE 2026</span>
-                    <h3>5º AgroSamas</h3>
+                    <span class="agrosamas-card-badge"><span data-lang-key="ev-agrosamas-card-badge">⭐ DESTAQUE</span> <span data-agrosamas-bind="year">2026</span></span>
+                    <h3 data-agrosamas-bind="name">5º AgroSamas</h3>
                 </div>
-                <p class="agrosamas-card-desc" data-lang-key="ev-agrosamas-desc">O maior evento de música, gastronomia e agronegócio da região!</p>
+                <p class="agrosamas-card-desc" data-lang-key="ev-agrosamas-desc">A edição já começou a revelar sua programação. Novas atrações serão divulgadas em breve.</p>
+                <p class="agrosamas-card-attraction" data-agrosamas-featured-program hidden><span data-lang-key="agrosamas-featured-label">Primeira atração anunciada</span><strong data-agrosamas-bind="featured-program-title">Roupa Nova</strong><time data-agrosamas-bind="featured-program-date">20 SET</time></p>
                 <div class="agrosamas-card-info">
-                    <span>📅 17–21 Set</span>
-                    <span data-lang-key="ev-gratuito">🆓 Gratuito</span>
+                    <span>📅 <span data-agrosamas-bind="date-range-short">18–21 set</span></span>
+                    <span>📍 <span data-agrosamas-bind="location">Rua do Mathe</span></span>
+                    <span>⏳ <span data-agrosamas-bind="duration-days">4 dias</span></span>
                 </div>
-                <a href="https://agrosamas.com.br" target="_blank" rel="noopener noreferrer" class="agrosamas-card-btn" data-lang-key="ev-agrosamas-site">Site Oficial →</a>
+                <div class="agrosamas-card-actions">
+                    <a href="/agrosamas-2026" class="agrosamas-card-btn" data-lang-key="ev-agrosamas-site">Ver edição 2026 →</a>
+                    <a href="/agrosamas" class="agrosamas-card-secondary" data-lang-key="ev-agrosamas-hub">Conhecer o AgroSamas</a>
+                </div>
             </div>
 
             <!-- Filtro mês -->
@@ -312,7 +319,7 @@
         </p>
     </footer>
 
-    <script src="config.js?v=site-public-b1-20260708"></script>
+    <script src="config.js?v=agro-02-20260909"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check-compat.js" defer></script>
@@ -1151,7 +1158,7 @@
         document.addEventListener('translationsApplied', refreshEventLanguage);
     });
     </script>
-    <script src="translations.js?v=site-public-b1-20260708"></script>
+    <script src="translations.js?v=agro-05-20260910"></script>
     <script src="js/cookies.js?v=site-public-b1-20260708"></script>
     <!-- Bloco 4F: carregador público de banners publicados. -->
     <script src="js/public-banners.js?v=site-public-bannerfit-20260805" defer></script>

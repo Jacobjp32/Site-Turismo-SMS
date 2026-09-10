@@ -1,9 +1,11 @@
 window.TURISMO_EVENTOS = [
   {
     id: "agrosamas",
+    seriesId: "agrosamas",
+    activeEditionId: "agrosamas-2026",
     nome: "AgroSamas",
     categoria: "Eventos",
-    descricao: "Grande evento do município com shows, feira gastronômica, exposição agropecuária e atrações para toda a família.",
+    descricao: "Evento anual de São Mateus do Sul, com informações da edição vigente publicadas pelos canais oficiais.",
     imagem: "images/agrosamas-publico-show-noturno.webp",
     galeria: [
       "images/agrosamas-publico-show-noturno.webp",
@@ -11,7 +13,9 @@ window.TURISMO_EVENTOS = [
       "images/empreendimentos/agrosamas/agrosamas-02.jpg",
       "images/empreendimentos/agrosamas/agrosamas-03.jpeg"
     ],
-    url: "/eventos",
+    url: "/agrosamas",
+    hubUrl: "/agrosamas",
+    editionUrl: "/agrosamas-2026",
     localId: "rua-do-mathe",
     localUrl: "/local?id=rua-do-mathe",
     periodo: "Setembro",

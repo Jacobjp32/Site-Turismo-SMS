@@ -607,3 +607,51 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255,215,0,0.4);
         }
+
+        .agrosamas-card-attraction {
+            align-items: center;
+            background: rgba(0, 0, 0, 0.26);
+            border-left: 3px solid #ffd700;
+            display: grid;
+            gap: 0.2rem 0.75rem;
+            grid-template-columns: minmax(0, 1fr) auto;
+            margin: 0 0 1rem;
+            padding: 0.75rem 0.85rem;
+        }
+
+        .agrosamas-card-attraction > span {
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 0.62rem;
+            font-weight: 700;
+            grid-column: 1 / -1;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .agrosamas-card-attraction strong {
+            color: white;
+        }
+
+        .agrosamas-card-attraction time {
+            color: #ffd700;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+        }
+
+        .agrosamas-card-actions {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .agrosamas-card-secondary {
+            color: white !important;
+            font-size: 0.85rem;
+            font-weight: 600;
+            justify-self: center;
+            text-underline-offset: 0.25rem;
+        }
+
+        .agrosamas-card-secondary:hover {
+            color: #ffd700 !important;
+        }

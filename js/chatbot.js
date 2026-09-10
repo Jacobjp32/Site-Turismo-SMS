@@ -121,15 +121,15 @@
             'morango':          'A Rota Sabores & Memórias reúne cafés coloniais, queijos, doces e vivências rurais em São Mateus do Sul. 🍓 Consulte o mapa turístico para ver os empreendimentos ativos.',
             'morangos':         'A Rota Sabores & Memórias reúne cafés coloniais, queijos, doces e vivências rurais em São Mateus do Sul. 🍓 Consulte o mapa turístico para ver os empreendimentos ativos.',
             // Eventos
-            'eventos':          'Calendário 2026 com mais de 280 eventos! 📅\n\n• Baile do Pierogi — 25/04\n• Mês Polonês — Agosto\n• Polskie Smaki — 29/08\n• V AgroSamas — 18-21/09\n• Natal Ouro Verde — Dez\n\nVisite a página Eventos para o calendário completo!',
-            'evento':           'Próximos eventos em São Mateus do Sul: 📅\n\n• Baile do Pierogi — 25/04/2026\n• Festival do Cordeiro — 07-09/08/2026\n• Polskie Smaki — 29/08/2026\n• V AgroSamas — 18-21/09/2026\n• Natal Ouro Verde — Dez/2026\n\nVisite a página Eventos para ver todos!',
-            'festa':            'Principais festas de São Mateus do Sul: 🎉\n\n🥟 Baile do Pierogi — abril\n🐑 Festival do Cordeiro — agosto\n🇵🇱 Polskie Smaki — agosto\n🚜 V AgroSamas — setembro\n🎄 Natal Ouro Verde — dezembro\n\nTodas com entrada gratuita!',
-            'festas':           'Principais festas de São Mateus do Sul: 🎉\n\n🥟 Baile do Pierogi — abril\n🐑 Festival do Cordeiro — agosto\n🇵🇱 Polskie Smaki — agosto\n🚜 V AgroSamas — setembro\n🎄 Natal Ouro Verde — dezembro\n\nTodas com entrada gratuita!',
-            'agrosamas':        'V AgroSamas 2026: 18 a 21 de setembro! 🌿\nShows nacionais, gastronomia, exposição agropecuária. Entrada gratuita!',
+            'eventos':          'Calendário 2026 com mais de 280 eventos! 📅\n\n• Baile do Pierogi — 25/04\n• Mês Polonês — Agosto\n• Polskie Smaki — 29/08\n• 5º AgroSamas — 18-21/09\n• Natal Ouro Verde — Dez\n\nVisite a página Eventos para o calendário completo!',
+            'evento':           'Próximos eventos em São Mateus do Sul: 📅\n\n• Baile do Pierogi — 25/04/2026\n• Festival do Cordeiro — 07-09/08/2026\n• Polskie Smaki — 29/08/2026\n• 5º AgroSamas — 18-21/09/2026\n• Natal Ouro Verde — Dez/2026\n\nVisite a página Eventos para ver todos!',
+            'festa':            'Principais festas de São Mateus do Sul: 🎉\n\n🥟 Baile do Pierogi — abril\n🐑 Festival do Cordeiro — agosto\n🇵🇱 Polskie Smaki — agosto\n🚜 5º AgroSamas — setembro\n🎄 Natal Ouro Verde — dezembro\n\nConsulte os canais oficiais de cada evento para informações de acesso.',
+            'festas':           'Principais festas de São Mateus do Sul: 🎉\n\n🥟 Baile do Pierogi — abril\n🐑 Festival do Cordeiro — agosto\n🇵🇱 Polskie Smaki — agosto\n🚜 5º AgroSamas — setembro\n🎄 Natal Ouro Verde — dezembro\n\nConsulte os canais oficiais de cada evento para informações de acesso.',
+            'agrosamas':        '5º AgroSamas: 18 a 21 de setembro de 2026, na Rua do Mathe e entorno. 🌿\nRoupa Nova está confirmado para 20 de setembro. Novas atrações serão divulgadas em breve.',
             'natal':            'Natal Ouro Verde: 6 a 20/12/2026! 🎄\nDesfiles, shows, chegada do Papai Noel e feira gastronômica.',
             'mes polones':      'Mês Polonês em agosto! 🇵🇱\nBaile Polonês (01/08), Festival do Cordeiro (07-09/08), Polskie Smaki (29/08) e muito mais!',
             'agosto':           'Agosto é o mês polonês de São Mateus do Sul! 🇵🇱\n\n• 01/08 — Baile Polonês\n• 07-09/08 — Festival do Cordeiro\n• 29/08 — Polskie Smaki (gastronomia e folclore)\n\nO mês mais agitado da cidade!',
-            'setembro':         'Em setembro temos o V AgroSamas (18-21/09)! 🚜\nO maior evento do município — shows nacionais, feira gastronômica, exposição agropecuária. Entrada gratuita!',
+            'setembro':         'Em setembro temos o 5º AgroSamas, de 18 a 21/09, na Rua do Mathe e entorno. 🚜\nRoupa Nova está confirmado para 20/09. Novas atrações serão divulgadas em breve.',
             'dezembro':         'Em dezembro temos o Natal Ouro Verde (6-20/12)! 🎄\nDesfiles temáticos, shows, chegada do Papai Noel e feira gastronômica.',
             'cordeiro':         'Festival do Cordeiro: 7 a 9/08/2026! 🐑\nGastronomia de cordeiro, shows nativistas e exposição de ovinos.',
             // Contato
@@ -187,8 +187,8 @@
             'hotel':      'We have hotels, rural guesthouses and cottages! 🏨\nCheck the "Where to Stay" page for details.',
             'accommodation':'Check the "Where to Stay" page for all lodging options! 🏨',
             // Events
-            'events':     '2026 Calendar with 280+ events! 📅\n\n• Pierogi Ball — Apr 25\n• Polish Month — August\n• Polskie Smaki — Aug 29\n• V AgroSamas — Sep 18-21\n• Christmas Ouro Verde — Dec',
-            'agrosamas':  'V AgroSamas 2026: September 18–21! 🌿\nNational shows, food fair, agribusiness expo. Free entry!',
+            'events':     '2026 Calendar with 280+ events! 📅\n\n• Pierogi Ball — Apr 25\n• Polish Month — August\n• Polskie Smaki — Aug 29\n• 5th AgroSamas — Sep 18-21\n• Christmas Ouro Verde — Dec',
+            'agrosamas':  '5th AgroSamas: September 18–21, 2026, at Rua do Mathe and the surrounding area. 🌿\nRoupa Nova is confirmed for September 20. More attractions will be announced soon.',
             'christmas':  'Ouro Verde Christmas: Dec 6–20, 2026! 🎄\nParades, shows, Santa Claus arrival and food fair.',
             // Contact
             'contact':    '📞 +55 (42) 3532-4163\n📧 turismo@saomateusdosul.pr.gov.br\n📍 Culture Cottage — Iguaçu River Square\n⏰ Mon–Fri: 8 AM–12 PM and 1 PM–4 PM',
@@ -229,8 +229,8 @@
             'hotel':      '¡Tenemos hoteles, posadas rurales y cabañas! 🏨\nConsulta la página "Dónde Alojarse".',
             'alojamiento':'Consulta la página "Dónde Alojarse" para todas las opciones! 🏨',
             // Eventos
-            'eventos':    '¡Calendario 2026 con más de 280 eventos! 📅\n\n• Baile del Pierogi — 25/04\n• Mes Polaco — Agosto\n• Polskie Smaki — 29/08\n• V AgroSamas — 18-21/09\n• Navidad Ouro Verde — Dic',
-            'agrosamas':  'V AgroSamas 2026: 18 al 21 de septiembre! 🌿\n¡Shows nacionales, feria gastronómica, exposición agropecuaria. ¡Entrada gratuita!',
+            'eventos':    '¡Calendario 2026 con más de 280 eventos! 📅\n\n• Baile del Pierogi — 25/04\n• Mes Polaco — Agosto\n• Polskie Smaki — 29/08\n• 5.º AgroSamas — 18-21/09\n• Navidad Ouro Verde — Dic',
+            'agrosamas':  '5.º AgroSamas: del 18 al 21 de septiembre de 2026, en Rua do Mathe y sus alrededores. 🌿\nRoupa Nova está confirmado para el 20 de septiembre. Próximamente se anunciarán nuevas atracciones.',
             'navidad':    '¡Navidad Ouro Verde: 6 al 20/12/2026! 🎄\nDesfiles, shows, llegada de Papá Noel y feria gastronómica.',
             // Contacto
             'contacto':   '📞 +55 (42) 3532-4163\n📧 turismo@saomateusdosul.pr.gov.br\n📍 Cabaña de la Cultura — Plaza del Río Iguaçu\n⏰ Lun-Vie: 8-12h y 13-16h',
@@ -270,8 +270,8 @@
             'hotel':      'Mamy hotele, wiejskie pensjonaty i domki! 🏨\nSprawdź stronę "Gdzie Spać".',
             'nocleg':     'Sprawdź stronę "Gdzie Spać", aby zobaczyć wszystkie opcje noclegowe! 🏨',
             // Wydarzenia
-            'wydarzenia': 'Kalendarz 2026 z ponad 280 wydarzeniami! 📅\n\n• Bal Pierogowy — 25/04\n• Miesiąc Polski — sierpień\n• Polskie Smaki — 29/08\n• V AgroSamas — 18-21/09\n• Boże Narodzenie Ouro Verde — grudzień',
-            'agrosamas':  'V AgroSamas 2026: 18-21 września! 🌿\nNarodowe pokazy, targ gastronomiczny, targi rolnicze. Wstęp wolny!',
+            'wydarzenia': 'Kalendarz 2026 z ponad 280 wydarzeniami! 📅\n\n• Bal Pierogowy — 25/04\n• Miesiąc Polski — sierpień\n• Polskie Smaki — 29/08\n• 5. AgroSamas — 18-21/09\n• Boże Narodzenie Ouro Verde — grudzień',
+            'agrosamas':  '5. AgroSamas: 18-21 września 2026 r., przy Rua do Mathe i w najbliższej okolicy. 🌿\nRoupa Nova jest potwierdzony na 20 września. Wkrótce ogłosimy kolejne atrakcje.',
             'swięta':     'Boże Narodzenie Ouro Verde: 6-20/12/2026! 🎄\nParady, pokazy, przybycie Świętego Mikołaja i targ gastronomiczny.',
             // Kontakt
             'kontakt':    '📞 +55 (42) 3532-4163\n📧 turismo@saomateusdosul.pr.gov.br\n📍 Chata Kultury — Plac Rzeki Iguaçu\n⏰ Pon-Pt: 8-12 i 13-16h',

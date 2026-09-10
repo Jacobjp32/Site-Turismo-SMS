@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harness temporal · AgroSamas 2026</title>
+    <style>
+        * { box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; }
+        body { background: #111a16; color: #fff; display: grid; font: 14px/1.4 system-ui, sans-serif; grid-template-rows: auto 1fr; }
+        .harness-controls { align-items: center; background: #111a16; display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0.65rem; }
+        .harness-controls strong { margin-right: auto; }
+        .harness-controls button { background: #fff; border: 2px solid transparent; border-radius: 4px; color: #17221d; cursor: pointer; font: inherit; font-weight: 800; min-height: 42px; padding: 0.5rem 0.8rem; }
+        .harness-controls button[aria-pressed="true"] { background: #e7b64f; border-color: #fff; }
+        .harness-controls button:focus-visible { outline: 3px solid #e7b64f; outline-offset: 2px; }
+        .harness-status { color: #e7b64f; font-weight: 800; min-width: 90px; text-align: right; }
+        iframe { background: #f5efe2; border: 0; height: 100%; width: 100%; }
+        @media (max-width: 560px) {
+            .harness-controls strong { flex: 1 0 100%; }
+            .harness-status { margin-left: auto; }
+        }
+    </style>
+</head>
+<body>
+    <div class="harness-controls" aria-label="Harness de estados temporais">
+        <strong>QA temporal · contrato real</strong>
+        <button type="button" data-state="PRE_EVENT" aria-pressed="true">PRE</button>
+        <button type="button" data-state="EVENT_LIVE" aria-pressed="false">LIVE</button>
+        <button type="button" data-state="POST_EVENT" aria-pressed="false">POST</button>
+        <span class="harness-status" data-harness-status aria-live="polite">Carregando</span>
+    </div>
+    <iframe title="Página AgroSamas 2026 em validação temporal" src="../../agrosamas-2026.html?qa=temporal-harness"></iframe>
+    <script>
+        (function () {
+            'use strict';
+            var frame = document.querySelector('iframe');
+            var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-state]'));
+            var status = document.querySelector('[data-harness-status]');
+
+            function contractInstant(state, edition) {
+                var start = Date.parse(edition.temporal.liveStartAt);
+                var end = Date.parse(edition.temporal.liveEndExclusiveAt);
+                if (state === 'PRE_EVENT') return start - 3600000;
+                if (state === 'EVENT_LIVE') return start + 43200000;
+                return end;
+            }
+
+            function render(state) {
+                var target = frame.contentWindow;
+                var contractApi = target.AgroSamasContract;
+                var pageApi = target.AgroSamas2026Page;
+                if (!contractApi || !pageApi) {
+                    status.textContent = 'Indisponível';
+                    return;
+                }
+                var resolved = pageApi.renderTemporalState(contractInstant(state, contractApi.contract.edition));
+                pageApi.renderProgramming();
+                buttons.forEach(function (button) {
+                    button.setAttribute('aria-pressed', String(button.getAttribute('data-state') === resolved));
+                });
+                status.textContent = resolved;
+            }
+
+            buttons.forEach(function (button) {
+                button.addEventListener('click', function () { render(button.getAttribute('data-state')); });
+            });
+            frame.addEventListener('load', function () { render('PRE_EVENT'); });
+        })();
+    </script>
+</body>
+</html>

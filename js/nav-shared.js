@@ -57,6 +57,7 @@
             <li>
                 <button class="dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="navAgendaMenu" aria-label="Abrir menu Agenda" data-lang-key-aria-label="nav-open-agenda"><span data-lang-key="nav-agenda">Agenda</span> <span class="arrow">▼</span></button>
                 <div class="dropdown-menu" id="navAgendaMenu" role="menu">
+                    <a href="/agrosamas" role="menuitem" data-lang-key="nav-agrosamas">AgroSamas</a>
                     <a href="/eventos/" role="menuitem" data-lang-key="nav-eventos">Eventos</a>
                     <a href="/noticias" role="menuitem" data-lang-key="nav-noticias-clean">Notícias</a>
                 </div>
@@ -491,8 +492,10 @@ body.font-larger{font-size:140%!important;}
         if (!hasLoadedScript(src)) {
             var script = document.createElement('script');
             script.src = src === 'js/search-index.js'
-                ? src + '?v=site-polish-hub-20260901'
-                : src;
+                ? src + '?v=site-agrosamas-hub-20260909-r2'
+                : src === 'js/data/eventos.js'
+                    ? src + '?v=agro-04-20260909'
+                    : src;
             script.async = false;
             document.body.appendChild(script);
         }

@@ -199,6 +199,7 @@
         const time = cleanString(timeValue.value);
         const rawLocationText = cleanString(location.binding.text);
         const seriesId = cleanString(rawEvent.seriesId) || null;
+        const editionId = cleanString(rawEvent.editionId) || null;
         const editorialSource = cleanString(rawEvent.source);
         const category = cleanString(rawEvent.category || rawEvent.categoria);
         const recurrence = rawEvent.recorrente === true || rawEvent.recurrence === true;
@@ -215,6 +216,7 @@
             runtimeSource,
             sourceId,
             seriesId,
+            editionId,
             title,
             date,
             publication: normalizePublication(rawEvent, runtimeSource),

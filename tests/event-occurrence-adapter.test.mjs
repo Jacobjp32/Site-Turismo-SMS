@@ -146,11 +146,17 @@ test('explicit city-wide, multiple, text-only, TBC and none states are preserved
 });
 
 test('seriesId is pass-through only', () => {
-    const linked = normalize({ title: 'AgroSamas', seriesId: 'agrosamas' }, RUNTIME_SOURCES.ANNUAL_STATIC, 'series-1');
+    const linked = normalize({
+        title: 'AgroSamas',
+        seriesId: 'agrosamas',
+        editionId: 'agrosamas-2026'
+    }, RUNTIME_SOURCES.ANNUAL_STATIC, 'series-1');
     const independent = normalize({ title: 'AgroSamas' }, RUNTIME_SOURCES.ANNUAL_STATIC, 'series-2');
 
     assert.equal(linked.seriesId, 'agrosamas');
+    assert.equal(linked.editionId, 'agrosamas-2026');
     assert.equal(independent.seriesId, null);
+    assert.equal(independent.editionId, null);
 });
 
 test('exact signature changes only with exact normalized fields, without fuzzy matching', () => {
