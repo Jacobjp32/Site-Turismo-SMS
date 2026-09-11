@@ -97,6 +97,24 @@
 
     if (!currentLabel) return;
 
+    var body = document.body;
+    var globalHeader = document.getElementById('sms-global-header');
+    var mainContent = document.getElementById('main-content');
+    var insertionReference = null;
+
+    if (globalHeader && globalHeader.parentNode === body) {
+      insertionReference = globalHeader.nextSibling;
+    } else if (mainContent) {
+      insertionReference = mainContent;
+      while (insertionReference.parentNode && insertionReference.parentNode !== body) {
+        insertionReference = insertionReference.parentNode;
+      }
+      if (insertionReference.parentNode !== body) return;
+    } else {
+      // Falha fechada: sem âncora estrutural inequívoca, não inserir em posição incerta.
+      return;
+    }
+
     // Cria elemento
     var styleEl = document.createElement('style');
     styleEl.textContent = CSS;
@@ -113,14 +131,8 @@
       '<span class="bc-current" aria-current="page">' + currentLabel + '</span>' +
       '</nav>';
 
-    // Insere após o primeiro elemento filho do body (após nav ou header)
-    var body = document.body;
-    var nav = body.querySelector('nav, header, .header');
-    if (nav && nav.parentNode === body) {
-      body.insertBefore(wrapper, nav.nextSibling);
-    } else {
-      body.insertBefore(wrapper, body.firstChild);
-    }
+    // Shared header: imediatamente após o wrapper completo. Legado: antes de #main-content.
+    body.insertBefore(wrapper, insertionReference);
 
     // Atualiza Schema.org BreadcrumbList no head
     injectSchema(path, currentLabel, lang);

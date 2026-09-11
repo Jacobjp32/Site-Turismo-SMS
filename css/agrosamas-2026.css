@@ -54,14 +54,13 @@
     --agro-gap-lg: clamp(2rem, 4vw, 3.5rem);
     --agro-gap-xl: clamp(3rem, 6vw, 5rem);
     --agro-gap-xxl: clamp(4.5rem, 8vw, 7rem);
+    --agro-local-nav-height: 66px;
 }
 
 html {
     scroll-behavior: smooth;
-    /* Single source of truth for the anchor offset. The sticky bars end at
-       ~240px on desktop; sections must not also carry scroll-margin-top or
-       the two offsets add up and the target lands far below the bars. */
-    scroll-padding-top: 246px;
+    /* Header global medido + nav local medida. As seções não repetem o offset. */
+    scroll-padding-top: calc(var(--sms-header-offset, 180px) + var(--agro-local-nav-height));
 }
 
 body.agrosamas-page {
@@ -526,7 +525,7 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
     left: 0;
     position: fixed;
     right: 0;
-    top: 180px;
+    top: var(--sms-header-offset, 180px);
 }
 
 .agro-local-nav__inner {
@@ -1364,9 +1363,8 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
 }
 
 @media (max-width: 820px) {
-    /* Sticky bars end at ~222px on mobile; match the offset to that real
-       height so the section top lands just below them. */
-    html { scroll-padding-top: 226px; }
+    :root { --agro-local-nav-height: 62px; }
+    html { scroll-padding-top: calc(var(--sms-header-offset, 164px) + var(--agro-local-nav-height)); }
     .agrosamas-page section[id] { scroll-margin-top: 0; }
     .agro-hero { min-height: auto; }
     .agro-hero__photo { inset: 0; opacity: 0.45; }
@@ -1387,7 +1385,7 @@ body[data-agro-temporal-state="POST_EVENT"] .agro-status span {
         padding-top: 0.9rem;
     }
     .agro-countdown__values > span { padding-bottom: 0.9rem; padding-top: 0.9rem; }
-    .agro-local-nav.is-fixed { top: 164px; }
+    .agro-local-nav.is-fixed { top: var(--sms-header-offset, 164px); }
     .agro-section { grid-template-columns: 48px minmax(0, 1fr); }
     .agro-intro__copy { grid-column: 2; }
     .agro-universe__heading,
@@ -1513,20 +1511,17 @@ body.high-contrast .agro-closing__photo {
 /* ---------------------------------------------------------------------------
    Anchor offset for the AgroSamas local navigation.
 
-   nav-shared.js injects a global scroll-padding-top (166px / 161px) sized for
-   the site header alone. On this page the sticky local nav adds ~60px more, so
-   the global value left the target section starting underneath the bar. These
-   rules are scoped to the AgroSamas page and use !important to win over the
-   injected global stylesheet, matching the real combined bar height.
+   nav-shared.js fornece o offset medido do header global. A página soma a
+   altura medida da própria nav local, sem duplicar a geometria do shared header.
    --------------------------------------------------------------------------- */
 @media (max-width: 820px) {
     html:has(.agrosamas-page) {
-        scroll-padding-top: 226px !important;
+        scroll-padding-top: calc(var(--sms-header-offset, 164px) + var(--agro-local-nav-height)) !important;
     }
 }
 
 @media (max-width: 420px) {
     html:has(.agrosamas-page) {
-        scroll-padding-top: 226px !important;
+        scroll-padding-top: calc(var(--sms-header-offset, 159px) + var(--agro-local-nav-height)) !important;
     }
 }

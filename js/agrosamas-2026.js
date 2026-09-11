@@ -416,10 +416,25 @@
         var localNav = one('[data-local-nav]');
         var scheduled = false;
 
+        function globalHeaderOffset() {
+            var bodyPadding = root.getComputedStyle(document.body).paddingTop;
+            var measuredOffset = Number.parseFloat(bodyPadding);
+            return Number.isFinite(measuredOffset) ? measuredOffset : 0;
+        }
+
+        function updateLocalNavHeight() {
+            if (!localNav) return;
+            document.documentElement.style.setProperty(
+                '--agro-local-nav-height',
+                localNav.getBoundingClientRect().height + 'px'
+            );
+        }
+
         function updateFixedPosition() {
             scheduled = false;
             if (!slot || !localNav) return;
-            var globalOffset = root.innerWidth <= 768 ? 164 : 180;
+            var globalOffset = globalHeaderOffset();
+            updateLocalNavHeight();
             localNav.classList.toggle('is-fixed', slot.getBoundingClientRect().top <= globalOffset);
         }
 
@@ -433,6 +448,13 @@
             root.addEventListener('scroll', schedulePositionUpdate, { passive: true });
             root.addEventListener('resize', schedulePositionUpdate);
             updateFixedPosition();
+            if (root.ResizeObserver) {
+                var localNavObserver = new root.ResizeObserver(function () {
+                    updateLocalNavHeight();
+                    schedulePositionUpdate();
+                });
+                localNavObserver.observe(localNav);
+            }
         }
         if (!root.IntersectionObserver) return;
         var links = all('.agro-local-nav a[href^="#"]');
