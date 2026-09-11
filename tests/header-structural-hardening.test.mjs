@@ -47,6 +47,18 @@ test('header runtime geometry has one measured CSS-variable contract', () => {
   assert.doesNotMatch(navSource, /\.nav-links\s*\{[^}]*top:\s*(?:115|120|154)px/s);
 });
 
+test('mobile drawer fixed positioning is not captured by the main nav backdrop', () => {
+  const mainNavStyle = navSource.match(/(?:^|\n)\.nav\s*\{([^}]*)\}/)?.[1] ?? '';
+  const backdropStyle = navSource.match(/(?:^|\n)\.nav::before\s*\{([^}]*)\}/)?.[1] ?? '';
+
+  assert.match(mainNavStyle, /backdrop-filter:\s*none/);
+  assert.equal((mainNavStyle.match(/backdrop-filter:/g) ?? []).length, 1);
+  assert.doesNotMatch(mainNavStyle, /(?:^|;)\s*(?:filter|transform|perspective|contain|will-change)\s*:/);
+  assert.match(backdropStyle, /position:\s*absolute/);
+  assert.match(backdropStyle, /backdrop-filter:\s*blur\(16px\)/);
+  assert.match(backdropStyle, /pointer-events:\s*none/);
+});
+
 test('initial geometry is measured synchronously after DOM injection and before deferred observers', () => {
   const injection = navSource.indexOf("document.body.insertAdjacentHTML('afterbegin'");
   const synchronousMeasurement = navSource.indexOf('syncHeaderGeometry();', injection);

@@ -157,6 +157,10 @@
     position: fixed; top: var(--sms-main-nav-top) !important; left: 0; right: 0; z-index: 9999;
     padding: 1rem 2rem;
     background: linear-gradient(180deg, rgba(10,61,46,0.95) 0%, rgba(10,61,46,0.84) 100%);
+    backdrop-filter: none;
+}
+.nav::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
     backdrop-filter: blur(16px);
 }
 .nav-container {
@@ -296,6 +300,7 @@ body.high-contrast *{background-color:#000!important;color:#ff0!important;border
 body.high-contrast img{filter:grayscale(100%) contrast(120%);}
 body.high-contrast a{color:#0ff!important;text-decoration:underline!important;}
 body.high-contrast .nav,body.high-contrast .accessibility-bar{background:#000!important;border-bottom:2px solid #ff0!important;}
+body.high-contrast .nav::before{background:#000!important;backdrop-filter:none;}
 body.font-large{font-size:120%!important;}
 body.font-larger{font-size:140%!important;}
 /* Botão voltar ao topo */
