@@ -97,6 +97,9 @@
     return {
       items: [],
       count: 0,
+      authoritativeCount: null,
+      rejectedCount: 0,
+      rejections: [],
       source: "static-fallback",
       state: "TECHNICAL_FAILURE",
       collection: COLLECTION,
@@ -181,9 +184,33 @@
     };
   }
 
+  function normalizeStringList(value) {
+    var seen = {};
+    return ensureArray(value).map(function (item) {
+      return typeof item === "string" ? clean(item) : "";
+    }).filter(function (item) {
+      if (!item || seen[item]) return false;
+      seen[item] = true;
+      return true;
+    });
+  }
+
+  function diagnoseDocument(data, docId) {
+    data = data || {};
+    var reasons = [];
+    if (data.status !== STATUS) reasons.push("STATUS_NOT_PUBLISHED");
+    if (!clean(data.id) && !clean(docId)) reasons.push("MISSING_ID");
+    if (!clean(data.name)) reasons.push("MISSING_NAME");
+    if (!clean(data.categoryLabel)) reasons.push("MISSING_CATEGORY_LABEL");
+    return {
+      accepted: reasons.length === 0,
+      reasons: reasons
+    };
+  }
+
   function normalizeDocument(data, docId) {
     data = data || {};
-    if (data.status !== STATUS) return null;
+    if (!diagnoseDocument(data, docId).accepted) return null;
 
     var content = data.content || {};
     var contact = data.contact || {};
@@ -196,15 +223,21 @@
       label: clean(data.categoryLabel),
       original: clean(data.source && data.source.originalCategory)
     };
-    var description = clean(content.summary) || clean(content.description);
+    var summary = clean(content.summary);
+    var description = clean(content.description) || summary;
+    var longDescription = clean(content.longDescription);
+    var openingHours = clean(content.openingHours);
+    var accessibility = clean(content.accessibility);
+    var tags = normalizeStringList(content.tags);
     var address = clean(location.address);
     var name = clean(data.name);
     var slug = clean(data.slug) || clean(data.id) || clean(docId);
     var id = clean(data.id) || clean(docId);
-    var routeIds = ensureArray(data.relationships && data.relationships.routeIds)
-      .filter(function (routeId) { return typeof routeId === "string"; });
-
-    if (!id || !name || !category.label) return null;
+    var routeIds = normalizeStringList(data.relationships && data.relationships.routeIds);
+    var display = data.display && typeof data.display === "object" ? data.display : {};
+    var seo = data.seo && typeof data.seo === "object" ? data.seo : {};
+    var coordinates = normalizeCoordinates(location);
+    var publicUrl = clean(seo.canonicalPath) || "/local?id=" + encodeURIComponent(slug || id);
 
     return {
       id: id,
@@ -215,11 +248,22 @@
       categoria: category.label,
       description: description,
       descricao: description,
+      summary: summary,
+      content: {
+        summary: summary,
+        description: description,
+        longDescription: longDescription,
+        openingHours: openingHours,
+        accessibility: accessibility,
+        tags: tags.slice()
+      },
       address: address,
       endereco: address,
       localizacao: address,
-      coordinates: normalizeCoordinates(location),
-      coordenadas: normalizeCoordinates(location),
+      coordinates: coordinates,
+      coordenadas: coordinates,
+      lat: coordinates ? coordinates.lat : null,
+      lng: coordinates ? coordinates.lng : null,
       contact: {
         phone: clean(contact.phone),
         whatsapp: clean(contact.whatsapp),
@@ -232,16 +276,111 @@
         mainImage: mainImage,
         gallery: gallery
       },
+      location: {
+        address: address,
+        neighborhood: clean(location.neighborhood),
+        city: clean(location.city),
+        state: clean(location.state),
+        postalCode: clean(location.postalCode),
+        coordinates: coordinates,
+        mapsUrl: clean(location.mapsUrl)
+      },
       imagem: mainImage ? mainImage.url : "",
       galeria: gallery.map(function (item) { return item.url; }),
-      tags: ensureArray(content.tags).map(clean).filter(Boolean),
+      tags: tags,
+      subtitulo: summary,
+      historia: longDescription,
+      descricaoLonga: longDescription,
+      horario: openingHours,
+      acessibilidade: accessibility,
+      telefone: clean(contact.phone),
+      whatsapp: clean(contact.whatsapp),
+      email: clean(contact.email),
+      site: clean(contact.website),
+      instagram: clean(contact.instagram),
+      facebook: clean(contact.facebook),
+      mapsUrl: clean(location.mapsUrl),
       relationships: {
         routeIds: routeIds.slice()
       },
       routeIds: routeIds.slice(),
+      rota: routeIds.join(" · "),
+      display: {
+        featured: display.featured === true,
+        priority: isFiniteNumber(display.priority) ? display.priority : 0,
+        mapVisible: display.mapVisible !== false,
+        claimable: display.claimable !== false
+      },
+      seo: {
+        title: clean(seo.title),
+        description: clean(seo.description),
+        canonicalPath: clean(seo.canonicalPath)
+      },
+      url: publicUrl,
       status: STATUS,
       source: COLLECTION
     };
+  }
+
+  function resolveDocuments(documents) {
+    documents = ensureArray(documents);
+    if (!documents.length) {
+      return {
+        items: [],
+        count: 0,
+        authoritativeCount: 0,
+        rejectedCount: 0,
+        rejections: [],
+        source: "firestore",
+        state: "AUTHORITATIVE_EMPTY",
+        collection: COLLECTION,
+        queriedStatus: STATUS,
+        fallbackReason: null,
+        message: "Leitura permitida, mas nao ha empreendimentos published.",
+        error: null,
+        generatedAt: new Date().toISOString()
+      };
+    }
+
+    var items = [];
+    var rejections = [];
+    documents.forEach(function (entry) {
+      var docId = clean(entry && entry.id);
+      var data = entry && entry.data || {};
+      var diagnosis = diagnoseDocument(data, docId);
+      var item = diagnosis.accepted ? normalizeDocument(data, docId) : null;
+      if (item) items.push(item);
+      else rejections.push({ id: docId, reasons: diagnosis.reasons.slice() });
+    });
+
+    return {
+      items: items,
+      count: items.length,
+      authoritativeCount: documents.length,
+      rejectedCount: rejections.length,
+      rejections: rejections,
+      source: "firestore",
+      state: rejections.length
+        ? (items.length ? "AUTHORITATIVE_PARTIAL" : "AUTHORITATIVE_INVALID")
+        : "SUCCESS",
+      collection: COLLECTION,
+      queriedStatus: STATUS,
+      fallbackReason: null,
+      message: rejections.length
+        ? "Leitura concluida com documentos published rejeitados pelo contrato publico."
+        : "Leitura concluida.",
+      error: null,
+      generatedAt: new Date().toISOString()
+    };
+  }
+
+  function localEmulatorRequested() {
+    try {
+      return /^(?:localhost|127\.0\.0\.1)$/.test(window.location.hostname || "") &&
+        new URLSearchParams(window.location.search || "").get("emulator") === "1";
+    } catch (_) {
+      return false;
+    }
   }
 
   async function ensureFirestore(debug) {
@@ -257,10 +396,25 @@
     var appMod = mods[0];
     var fsMod = mods[1];
     var appCheckMod = mods[2];
+    var useEmulator = localEmulatorRequested();
+    var runtimeConfig = useEmulator
+      ? Object.assign({}, window.CONFIG.firebase, {
+          projectId: "demo-turismo-sms-admin-finalization",
+          authDomain: "demo-turismo-sms-admin-finalization.firebaseapp.com",
+          storageBucket: "demo-turismo-sms-admin-finalization.appspot.com"
+        })
+      : window.CONFIG.firebase;
     var existing = appMod.getApps().find(function (app) { return app.name === APP_NAME; });
-    var app = existing || appMod.initializeApp(window.CONFIG.firebase, APP_NAME);
+    var app = existing || appMod.initializeApp(runtimeConfig, APP_NAME);
+    var db = useEmulator && !existing
+      ? fsMod.initializeFirestore(app, { experimentalForceLongPolling: true })
+      : fsMod.getFirestore(app);
 
-    if (appCheckMod && typeof appCheckMod.initModularAppCheck === "function") {
+    if (useEmulator && !existing) {
+      fsMod.connectFirestoreEmulator(db, "127.0.0.1", 8080);
+    }
+
+    if (!useEmulator && appCheckMod && typeof appCheckMod.initModularAppCheck === "function") {
       try {
         await appCheckMod.initModularAppCheck(app);
       } catch (error) {
@@ -269,9 +423,23 @@
     }
 
     return {
-      db: fsMod.getFirestore(app),
+      db: db,
       fs: fsMod
     };
+  }
+
+  async function queryPublished(debug) {
+    var ctx = await ensureFirestore(debug);
+    var q = ctx.fs.query(
+      ctx.fs.collection(ctx.db, COLLECTION),
+      ctx.fs.where("status", "==", STATUS)
+    );
+    var snapshot = await ctx.fs.getDocs(q);
+    var documents = [];
+    snapshot.forEach(function (doc) {
+      documents.push({ id: doc.id, data: doc.data() });
+    });
+    return documents;
   }
 
   async function readPublished(options) {
@@ -281,58 +449,18 @@
 
     if (inflight && options.force !== true) return inflight;
 
-    inflight = withTimeout((async function () {
-      try {
-        var ctx = await ensureFirestore(debug);
-        var q = ctx.fs.query(
-          ctx.fs.collection(ctx.db, COLLECTION),
-          ctx.fs.where("status", "==", STATUS)
-        );
-        var snapshot = await ctx.fs.getDocs(q);
-        var items = [];
-
-        snapshot.forEach(function (doc) {
-          var item = normalizeDocument(doc.data(), doc.id);
-          if (item) items.push(item);
-        });
-
-        if (!items.length) {
-          lastResult = {
-            items: [],
-            count: 0,
-            source: "firestore",
-            collection: COLLECTION,
-            queriedStatus: STATUS,
-            state: "AUTHORITATIVE_EMPTY",
-            fallbackReason: null,
-            message: "Leitura permitida, mas nao ha empreendimentos published.",
-            error: null,
-            generatedAt: new Date().toISOString()
-          };
-          log(debug, "leitura permitida sem published", lastResult);
-          return lastResult;
-        }
-
-        lastResult = {
-          items: items,
-          count: items.length,
-          source: "firestore",
-          collection: COLLECTION,
-          queriedStatus: STATUS,
-          state: "SUCCESS",
-          fallbackReason: null,
-          message: "Leitura concluida.",
-          error: null,
-          generatedAt: new Date().toISOString()
-        };
-        log(debug, "leitura concluida", { count: items.length });
-        return lastResult;
-      } catch (error) {
-        lastResult = makeFallback(error);
-        log(debug, "fallback por falha", lastResult);
-        return lastResult;
-      }
-    })(), timeoutMs).catch(function (error) {
+    var reader = typeof options.reader === "function" ? options.reader : function () {
+      return queryPublished(debug);
+    };
+    inflight = withTimeout(Promise.resolve().then(reader), timeoutMs).then(function (documents) {
+      lastResult = resolveDocuments(documents);
+      log(debug, "leitura concluida", {
+        state: lastResult.state,
+        count: lastResult.count,
+        rejectedCount: lastResult.rejectedCount
+      });
+      return lastResult;
+    }).catch(function (error) {
       lastResult = makeFallback(error);
       log(debug, "fallback por timeout/falha", lastResult);
       return lastResult;
@@ -354,7 +482,9 @@
     collection: COLLECTION,
     status: STATUS,
     isDebugEnabled: getDebugFlag,
+    diagnoseDocument: diagnoseDocument,
     normalizeDocument: normalizeDocument,
+    resolveDocuments: resolveDocuments,
     readPublished: readPublished,
     load: readPublished,
     getLastResult: function () {

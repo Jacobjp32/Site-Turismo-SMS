@@ -147,7 +147,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Raleway:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="css/variables.css?v=site-public-b1-20260708">
-    <link rel="stylesheet" href="css/index.css?v=agro-05-20260910">
+    <link rel="stylesheet" href="css/index.css?v=admin-e2e-publication-20260911">
     <link rel="stylesheet" href="css/season-theme.css?v=site-public-b1-20260708">
     <link rel="stylesheet" href="css/tourism-mascot.css?v=site-public-b1-20260708">
 
@@ -167,9 +167,9 @@
     <script src="js/data/eventos.js?v=agro-04-20260909" defer></script>
     <script src="js/data/informacoes-essenciais.js?v=site-public-b1-20260708" defer></script>
     <script src="js/data/turismo-data-adapter.js?v=site-public-b1-20260708" defer></script>
-    <script src="js/cms-public-routes-adapter.js?v=rotas-v11-public-adapter" defer></script>
-    <script src="js/cms-public-establishments-adapter.js?v=rotas-v11-public-adapter" defer></script>
-    <script src="js/data/turismo-data.js?v=site-public-b1-20260708" defer></script>
+    <script src="js/cms-public-routes-adapter.js?v=admin-e2e-publication-20260911" defer></script>
+    <script src="js/cms-public-establishments-adapter.js?v=admin-e2e-publication-20260911" defer></script>
+    <script src="js/data/turismo-data.js?v=admin-e2e-publication-20260911" defer></script>
     <script src="js/site-stats.js?v=site-public-b1-20260708" defer></script>
     <script src="js/weather.js?v=site-public-b1-20260708" defer></script>
     <script src="js/search-index.js?v=site-agrosamas-hub-20260909-r2" defer></script>
@@ -177,7 +177,7 @@
 
 </head>
 <body class="home-page">
-    <script src="js/nav-shared.js?v=site-agrosamas-hub-20260909-r2"></script>
+    <script src="js/nav-shared.js?v=admin-e2e-publication-20260911"></script>
 
     <!-- Bloco 4F: slot de banners publicados (preenchido por js/public-banners.js). -->
     <div id="public-banners-slot" hidden></div>
@@ -264,7 +264,7 @@
                     <span class="sr-only" data-lang-key="featured-prev">Anterior</span>
                 </button>
 
-                <div class="featured-carousel-track" data-featured-track tabindex="0" aria-label="Experiências em destaque" data-lang-key-aria-label="featured-experiences-title">
+                <div class="featured-carousel-track" data-featured-track data-public-establishments="featured" tabindex="0" aria-label="Experiências em destaque" data-lang-key-aria-label="featured-experiences-title">
                     <article class="featured-experience-card">
                         <a href="/mapa-turistico?categoria=Gastronomia">
                             <img src="images/empreendimentos/dona-bernardina/dona-bernardina-01.jpg" alt="Delícias da Bernardina" loading="lazy" decoding="async" width="4032" height="3024">
@@ -820,7 +820,7 @@
             <p class="section-subtitle" data-lang-key="section-atracoes-desc">Conheça os pontos turísticos que fazem de São Mateus do Sul um destino único</p>
         </div>
 
-        <div class="attractions-grid">
+        <div class="attractions-grid" data-public-establishments="attractions" aria-live="polite">
             <div class="attraction-card" onclick="window.location.href='/local?id=igreja-matriz'" style="cursor:pointer">
                 <img src="images/IGREJA_MATRIZ_FRONTAL.jpg" class="attraction-image" alt="" loading="lazy" decoding="async" width="1200" height="675">
                 <div class="attraction-content">
@@ -953,7 +953,7 @@
                 <p class="section-description" data-lang-key="hospedagem-desc">Conforto e hospitalidade polonesa para sua estadia</p>
             </div>
 
-            <div class="hotels-grid">
+            <div class="hotels-grid" data-public-establishments="home-lodging" aria-live="polite">
                 <div class="hotel-card">
                     <div class="hotel-icon">🏨</div>
                     <h3 class="hotel-name" data-lang-key="hotel1-nome">Hotel São Mateus</h3>

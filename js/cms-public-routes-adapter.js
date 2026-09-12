@@ -164,6 +164,15 @@
     });
   }
 
+  function localEmulatorRequested() {
+    try {
+      return /^(?:localhost|127\.0\.0\.1)$/.test(window.location.hostname || "") &&
+        new URLSearchParams(window.location.search || "").get("emulator") === "1";
+    } catch (_) {
+      return false;
+    }
+  }
+
   async function ensureFirestore() {
     if (!window.CONFIG || !window.CONFIG.firebase) {
       throw { code: "config-missing", message: "CONFIG.firebase ausente" };
@@ -176,12 +185,26 @@
     var appMod = mods[0];
     var fsMod = mods[1];
     var appCheckMod = mods[2];
+    var useEmulator = localEmulatorRequested();
+    var runtimeConfig = useEmulator
+      ? Object.assign({}, window.CONFIG.firebase, {
+          projectId: "demo-turismo-sms-admin-finalization",
+          authDomain: "demo-turismo-sms-admin-finalization.firebaseapp.com",
+          storageBucket: "demo-turismo-sms-admin-finalization.appspot.com"
+        })
+      : window.CONFIG.firebase;
     var existing = appMod.getApps().find(function (app) { return app.name === APP_NAME; });
-    var app = existing || appMod.initializeApp(window.CONFIG.firebase, APP_NAME);
-    if (appCheckMod && typeof appCheckMod.initModularAppCheck === "function") {
+    var app = existing || appMod.initializeApp(runtimeConfig, APP_NAME);
+    var db = useEmulator && !existing
+      ? fsMod.initializeFirestore(app, { experimentalForceLongPolling: true })
+      : fsMod.getFirestore(app);
+    if (useEmulator && !existing) {
+      fsMod.connectFirestoreEmulator(db, "127.0.0.1", 8080);
+    }
+    if (!useEmulator && appCheckMod && typeof appCheckMod.initModularAppCheck === "function") {
       try { await appCheckMod.initModularAppCheck(app); } catch (_) {}
     }
-    return { db: fsMod.getFirestore(app), fs: fsMod };
+    return { db: db, fs: fsMod };
   }
 
   async function queryPublished() {

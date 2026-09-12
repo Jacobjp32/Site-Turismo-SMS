@@ -1370,7 +1370,7 @@
                         <h2>🛠️ Alterações de empreendimentos</h2>
                     </div>
                     <p class="admin-helper-text">
-                        Esta fila registra apenas a revisão administrativa das alterações solicitadas. Aprovar aqui <strong>não publica nada automaticamente</strong> no mapa público nem nos dados estáticos; a solicitação aprovada fica aguardando publicação/atualização controlada pela equipe responsável.
+                        Esta fila registra a revisão administrativa das alterações solicitadas. Aprovar aqui <strong>não altera o empreendimento automaticamente</strong>; a aplicação posterior usa o fluxo editorial e preserva o status: publicados são republicados, rascunhos continuam privados e arquivados precisam ser restaurados antes.
                     </p>
                     <div id="establishment-update-requests-container">
                         <div class="loading">Carregando...</div>
@@ -1593,7 +1593,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check-compat.js"></script>
-    <script src="js/firebase-auth.js?v=cms-4c-fix3-20260708"></script>
+    <script src="js/firebase-auth.js?v=admin-e2e-publication-20260911"></script>
     <script src="js/admin-content-cms.js?v=media-reference-safety-20260828"></script>
     <!-- Fundação modular do Admin CMS (Bloco 1 / Etapa 1) — modo passthrough, aditivo e inerte. -->
     <script src="js/admin/admin-context.js?v=admin-modular-20260625"></script>
@@ -1607,7 +1607,7 @@
          do placeholder.js para que o módulo real vença o placeholder de mesmo id. -->
     <script src="js/admin/modules/banners.js?v=admin-banners-4e-20260629"></script>
     <!-- CMS-2B: módulo real de Empreendimentos. Carregar ANTES do placeholder.js. -->
-    <script src="js/admin/modules/empreendimentos.js?v=admin-establishments-cms-4d-20260708"></script>
+    <script src="js/admin/modules/empreendimentos.js?v=admin-e2e-publication-20260911"></script>
     <!-- Rotas V1.1: helpers puros + módulo real, antes do placeholder do mesmo id. -->
     <script src="js/admin/modules/rotas-helpers.js?v=rotas-v1-1-admin-20260820"></script>
     <script src="js/admin/modules/rotas.js?v=rotas-v1-1-admin-20260820"></script>
@@ -1633,16 +1633,24 @@
         let adminSessionLogoutInProgress = false;
         let adminLastActivityPersistAt = 0;
 
-        // Aguardar Firebase estar pronto antes de vincular formulário de login
-        window.addEventListener('firebaseReady', function() {
+        let adminInteractionsBound = false;
+
+        function bindAdminInteractions() {
+            if (adminInteractionsBound) return;
             document.getElementById('adminLoginForm').addEventListener('submit', handleLogin);
             document.getElementById('toggleLoginPassword').addEventListener('click', toggleLoginPasswordVisibility);
             document.getElementById('managerForm').addEventListener('submit', handleManagerFormSubmit);
             document.querySelectorAll('.sidebar-menu a[data-section]').forEach(link => {
                 link.addEventListener('click', () => showSection(link.dataset.section));
             });
+            adminInteractionsBound = true;
             updateDate();
-        });
+        }
+
+        // O DOM já existe neste ponto. Vincular imediatamente evita perder
+        // firebaseReady quando o SDK vem de cache; o listener cobre o caminho lento.
+        bindAdminInteractions();
+        window.addEventListener('firebaseReady', bindAdminInteractions);
 
         // Quando estado de auth mudar, verificar permissão admin
         window.addEventListener('authStateChanged', function() {
@@ -1915,7 +1923,7 @@
             if (section === 'banners' && window.AdminBannersModule && typeof window.AdminBannersModule.activate === 'function') {
                 window.AdminBannersModule.activate(window.AdminContext || null);
             }
-            // CMS-2B: CRUD interno de empreendimentos (sem leitura publica e sem migracao).
+            // CMS-2A/C1 V2: gestão editorial cuja publicação alimenta o datasource público.
             if (section === 'empreendimentos' && window.AdminEstablishmentsModule && typeof window.AdminEstablishmentsModule.activate === 'function') {
                 window.AdminEstablishmentsModule.activate(window.AdminContext || null);
             }
@@ -2851,10 +2859,10 @@
 
         async function applyEstablishmentUpdateRequest(requestId) {
             const confirmation = [
-                'Aplicar esta solicitação aprovada ao catálogo interno cms_establishments?',
+                'Aplicar esta solicitação aprovada ao catálogo editorial cms_establishments?',
                 '',
-                'Isso atualiza o catálogo interno do CMS. O site público ainda usa dados estáticos.',
-                'Nenhuma publicação pública será feita automaticamente.'
+                'Se o empreendimento estiver publicado, as alterações serão republicadas no portal.',
+                'Rascunhos continuam privados; arquivados precisam ser restaurados antes.'
             ].join('\n');
 
             if (!confirm(confirmation)) return;
@@ -2885,8 +2893,8 @@
 
         async function applyAcceptedEstablishmentUpdateMedia(requestId) {
             const confirmation = [
-                'Esta ação copia as imagens aceitas para cms-media e atualiza o catálogo interno.',
-                'O site público ainda não muda.',
+                'Esta ação copia as imagens aceitas para cms-media e atualiza o catálogo editorial.',
+                'Se o empreendimento estiver publicado, a mídia será republicada no portal.',
                 '',
                 'Regra deste bloco:',
                 '- se o catálogo não tiver imagem principal, a primeira aceita vira imagem principal;',
@@ -3449,7 +3457,7 @@
             if (!(FirebaseSystem && typeof FirebaseSystem.isAdmin === 'function' && FirebaseSystem.isAdmin())) {
                 return `
                     <div class="update-request-callout">
-                        Há ${SEC.html(String(unapplied.length))} imagem(ns) aceita(s) ainda não aplicada(s). Somente administradores podem aplicar mídia ao catálogo interno.
+                        Há ${SEC.html(String(unapplied.length))} imagem(ns) aceita(s) ainda não aplicada(s). Somente administradores podem aplicar mídia ao catálogo editorial.
                     </div>
                 `;
             }
@@ -3496,7 +3504,7 @@
                         <p class="update-request-field"><strong>Destino:</strong> <code>cms_establishments/${SEC.html(request.appliedTo || request.establishmentId || '—')}</code></p>
                         <p class="update-request-field"><strong>Campos aplicados:</strong> ${SEC.html((request.appliedFields || []).map(getUpdateRequestFieldLabel).join(', ') || '—')}</p>
                         <div class="update-request-callout">
-                            O catálogo interno foi atualizado. O site público ainda usa dados estáticos.
+                            A solicitação foi aplicada ao catálogo editorial. Em documento publicado, o portal consome a alteração; em rascunho, ela permanece privada.
                         </div>
                     </section>
                 `;
@@ -3510,14 +3518,14 @@
                         <div class="page-actions">
                             <button class="btn-sm btn-approve" onclick="applyEstablishmentUpdateRequest('${SEC.js(request.id)}')">Aplicar ao catálogo</button>
                         </div>
-                    ` : '<p class="update-request-field">Somente administradores podem aplicar no catálogo interno.</p>')
+                    ` : '<p class="update-request-field">Somente administradores podem aplicar no catálogo editorial.</p>')
                     : '<p class="update-request-field">Sem campos textuais aplicáveis para aplicar automaticamente. Revise imagens e observações manualmente.</p>';
                 return `
                     <section class="update-request-panel update-request-actions">
                         <h4>Aplicar ao catálogo</h4>
                         ${renderUpdateRequestApplySummary(request)}
                         <div class="update-request-callout">
-                            Isso atualiza o catálogo interno do CMS. O site público ainda usa dados estáticos.
+                            A aplicação usa o workflow canônico: documentos publicados são republicados; rascunhos continuam privados.
                         </div>
                         ${actionHtml}
                     </section>

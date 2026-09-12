@@ -41,6 +41,7 @@
 .hotel-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 30px rgba(0,0,0,0.08); transition: transform 0.3s, box-shadow 0.3s; }
 .hotel-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.12); }
 .hotel-image { height: 200px; background: linear-gradient(135deg, var(--forest-deep), #0a5d3e); display: flex; align-items: center; justify-content: center; font-size: 4rem; color: rgba(255,255,255,0.3); }
+.hotel-image:is(img) { width: 100%; object-fit: cover; }
 .hotel-content { padding: 1.5rem; }
 .hotel-category { display: inline-block; padding: 0.3rem 0.8rem; background: var(--cream-light); color: var(--forest-deep); border-radius: 15px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; margin-bottom: 0.75rem; }
 .hotel-content h3 { font-family: var(--font-display); font-size: 1.4rem; color: var(--forest-deep); margin-bottom: 0.5rem; }
@@ -49,6 +50,7 @@
 .amenity { display: flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; color: #666; }
 .hotel-contact { border-top: 1px solid #eee; padding-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
 .hotel-contact a { display: flex; align-items: center; gap: 0.5rem; color: var(--forest-deep); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+.hotel-contact span { display: flex; align-items: center; gap: 0.5rem; color: var(--forest-deep); font-size: 0.9rem; }
 .hotel-contact a:hover { color: var(--gold-polish); }
 
 /* Booking Tips */

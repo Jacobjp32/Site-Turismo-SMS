@@ -146,22 +146,31 @@
     return "pontos";
   }
 
+  function isAuthoritativeState(state) {
+    return [
+      "SUCCESS",
+      "AUTHORITATIVE_EMPTY",
+      "AUTHORITATIVE_PARTIAL",
+      "AUTHORITATIVE_INVALID"
+    ].indexOf(state) !== -1;
+  }
+
   function applyPublicResults(routesResult, establishmentsResult) {
     var staticSnapshot = createStaticSnapshot();
     var snapshot = cloneSnapshot(staticSnapshot);
     var routesState = routesResult && routesResult.state || "TECHNICAL_FAILURE";
     var establishmentsState = establishmentsResult && establishmentsResult.state || "TECHNICAL_FAILURE";
-    var publicCutoverAllowed = routesState === "SUCCESS"
-      && Number(routesResult.authoritativeCount) > 0
-      && establishmentsState === "SUCCESS";
+    var routesAuthoritative = isAuthoritativeState(routesState);
+    var establishmentsAuthoritative = isAuthoritativeState(establishmentsState);
+    var publicCutoverAllowed = establishmentsAuthoritative;
 
-    if (routesState === "SUCCESS") {
+    if (routesAuthoritative) {
       snapshot.rotas = ensureArray(routesResult.items);
     } else if (routesState === "TECHNICAL_FAILURE") {
       snapshot.rotas = ensureArray(routesResult.items).length ? routesResult.items : snapshot.rotas;
     }
 
-    if (publicCutoverAllowed && establishmentsState !== "TECHNICAL_FAILURE") {
+    if (establishmentsAuthoritative) {
       snapshot.pontos = [];
       snapshot.hospedagens = [];
       snapshot.restaurantes = [];
@@ -171,10 +180,12 @@
     }
 
     window.TURISMO_DATA = snapshot;
-    var routesSource = routesState === "AUTHORITATIVE_EMPTY" ? "static-precutover" : (routesResult && routesResult.source || "static-fallback");
-    var establishmentsSource = publicCutoverAllowed
-      ? (establishmentsResult && establishmentsResult.source || "static-fallback")
-      : "static-precutover";
+    var routesSource = routesAuthoritative
+      ? (routesResult && routesResult.source || "firestore")
+      : (routesResult && routesResult.source || "static-fallback");
+    var establishmentsSource = establishmentsAuthoritative
+      ? (establishmentsResult && establishmentsResult.source || "firestore")
+      : (establishmentsResult && establishmentsResult.source || "static-fallback");
     window.TURISMO_DATA_SOURCE_META = {
       routesSource: routesSource,
       establishmentsSource: establishmentsSource,
@@ -182,8 +193,13 @@
       establishmentsState: establishmentsState,
       routesCount: routesResult && routesResult.authoritativeCount != null ? routesResult.authoritativeCount : ensureArray(snapshot.rotas).length,
       establishmentsCount: establishmentsResult && establishmentsResult.count != null ? establishmentsResult.count : 0,
+      establishmentsRejectedCount: establishmentsResult && establishmentsResult.rejectedCount != null
+        ? establishmentsResult.rejectedCount
+        : 0,
       activeRoutesCount: ensureArray(snapshot.rotas).length,
       fallbackReason: routesResult && routesResult.fallbackReason || establishmentsResult && establishmentsResult.fallbackReason || null,
+      routesAuthoritative: routesAuthoritative,
+      establishmentsAuthoritative: establishmentsAuthoritative,
       publicCutoverAllowed: publicCutoverAllowed
     };
     window.PUBLIC_CUTOVER_ALLOWED = publicCutoverAllowed;

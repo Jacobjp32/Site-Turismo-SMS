@@ -1022,6 +1022,27 @@ service cloud.firestore {
       return cheapDraftGroupEnvelopeValid() && isContentGroupWrite();
     }
 
+    // Caminho estreito para mídia. Evita percorrer o validador V2 completo,
+    // que excede o limite de expressões quando a galeria contém metadados.
+    function isEstablishmentMediaGroupUpdate() {
+      return request.resource.data.keys().hasAll(['validatedGroups']) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'media', 'updatedAt', 'updatedBy', 'schemaVersion',
+          'validatedGroups', 'revision'
+        ]) &&
+        request.resource.data.validatedGroups.diff(
+          resource.data.get('validatedGroups', {})
+        ).affectedKeys().hasOnly(['media']) &&
+        (request.resource.data.diff(resource.data).affectedKeys().hasAny(['media']) ||
+          request.resource.data.validatedGroups.diff(
+            resource.data.get('validatedGroups', {})
+          ).affectedKeys().hasAny(['media']));
+    }
+
+    function isValidEstablishmentMediaGroupUpdate() {
+      return cheapDraftGroupEnvelopeValid() && isMediaGroupWrite();
+    }
+
     function isEstablishmentLifecycleGroupUpdate() {
       return request.resource.data.keys().hasAll(['validatedGroups']) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
@@ -1430,13 +1451,15 @@ service cloud.firestore {
         ? isValidEstablishmentRelationshipUpdate()
         : isEstablishmentAtomicRelationshipUpdate()
           ? isValidEstablishmentAtomicRelationshipUpdate()
-          : isEstablishmentLifecycleGroupUpdate()
-            ? isValidEstablishmentLifecycleGroupUpdate()
-            : isEstablishmentSourceGroupUpdate()
-              ? isValidEstablishmentSourceGroupUpdate()
-              : isEstablishmentContentGroupUpdate()
-                ? isValidEstablishmentContentGroupUpdate()
-                : isValidEstablishmentV2GroupUpdate();
+          : isEstablishmentMediaGroupUpdate()
+            ? isValidEstablishmentMediaGroupUpdate()
+            : isEstablishmentLifecycleGroupUpdate()
+              ? isValidEstablishmentLifecycleGroupUpdate()
+              : isEstablishmentSourceGroupUpdate()
+                ? isValidEstablishmentSourceGroupUpdate()
+                : isEstablishmentContentGroupUpdate()
+                  ? isValidEstablishmentContentGroupUpdate()
+                  : isValidEstablishmentV2GroupUpdate();
       allow delete: if isAdmin() &&
         isDeletableEstablishmentStatus(resource.data.status) &&
         !resource.data.keys().hasAny(['editSession']);

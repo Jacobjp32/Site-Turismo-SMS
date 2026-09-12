@@ -7,7 +7,7 @@
  */
 
 // Incrementar versão sempre que houver mudanças de conteúdo
-const CACHE_NAME = 'turismo-sms-v22';
+const CACHE_NAME = 'turismo-sms-v23';
 const OFFLINE_URL = 'offline.html';
 
 const OFFLINE_CORE_ASSETS = [
@@ -52,6 +52,10 @@ const NEVER_CACHE = [
     'js/firebase-auth.js',
     'js/firebase-app-check.js',
     'js/nav-shared.js',
+    'js/cms-public-routes-adapter.js',
+    'js/cms-public-establishments-adapter.js',
+    'js/data/turismo-data.js',
+    'js/public-establishments-renderer.js',
     'js/site-meta.js',
     'favicon.ico',
     'api.open-meteo.com',

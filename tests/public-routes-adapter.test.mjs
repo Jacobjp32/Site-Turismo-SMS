@@ -6,6 +6,7 @@ import { test } from "node:test";
 const routesSource = await readFile(new URL("../js/cms-public-routes-adapter.js", import.meta.url), "utf8");
 const establishmentsSource = await readFile(new URL("../js/cms-public-establishments-adapter.js", import.meta.url), "utf8");
 const dataSource = await readFile(new URL("../js/data/turismo-data.js", import.meta.url), "utf8");
+const rendererSource = await readFile(new URL("../js/public-establishments-renderer.js", import.meta.url), "utf8");
 const searchSource = await readFile(new URL("../js/search-index.js", import.meta.url), "utf8");
 const statsSource = await readFile(new URL("../js/site-stats.js", import.meta.url), "utf8");
 
@@ -55,6 +56,38 @@ function loadRoutesAdapter() {
   const env = browserContext();
   vm.runInContext(routesSource, env.context);
   return env;
+}
+
+function establishmentData(id = "est-a", overrides = {}) {
+  return {
+    id,
+    slug: id,
+    name: "Estabelecimento A",
+    categoryId: "gastronomia",
+    categoryLabel: "Gastronomia",
+    status: "published",
+    content: {
+      summary: "Resumo",
+      description: "Descricao completa",
+      longDescription: "Historia",
+      openingHours: "09h as 18h",
+      accessibility: "Acesso nivelado",
+      tags: ["mate", "mate"],
+    },
+    contact: { phone: "42 0000-0000", website: "https://example.test" },
+    location: { address: "Rua A", coordinates: { lat: -25.8, lng: -50.4 } },
+    media: {
+      mainImage: { url: "https://example.test/main.webp", status: "active", source: "cms-media", alt: "Fachada" },
+      gallery: [
+        { url: "https://example.test/removed.webp", status: "removed", position: 1 },
+        { url: "https://example.test/gallery.webp", status: "active", position: 2 },
+      ],
+    },
+    relationships: { routeIds: ["rota-a"] },
+    display: { featured: true, priority: 5, mapVisible: false, claimable: true },
+    seo: { title: "SEO", description: "SEO desc", canonicalPath: "/local?id=est-a" },
+    ...overrides,
+  };
 }
 
 test("Firestore published routes resulta em SUCCESS", () => {
@@ -131,6 +164,32 @@ test("adapter CMS preserva routeIds, ordem, multirrota e desconhecidos", () => {
   assert.deepEqual(Array.from(item.routeIds), ["rota-b", "rota-a", "rota-desconhecida"]);
 });
 
+test("adapter de empreendimentos preserva campos editoriais e filtra mídia removida", () => {
+  const { context, window } = browserContext();
+  vm.runInContext(establishmentsSource, context);
+  const item = window.CMSPublicEstablishmentsAdapter.normalizeDocument(establishmentData(), "est-a");
+  assert.equal(item.descricao, "Descricao completa");
+  assert.equal(item.content.longDescription, "Historia");
+  assert.equal(item.telefone, "42 0000-0000");
+  assert.equal(item.imagem, "https://example.test/main.webp");
+  assert.deepEqual(Array.from(item.galeria), ["https://example.test/gallery.webp"]);
+  assert.deepEqual(Array.from(item.tags), ["mate"]);
+  assert.equal(item.display.mapVisible, false);
+  assert.equal(item.seo.canonicalPath, "/local?id=est-a");
+});
+
+test("published inválido é authoritative e não aciona conteúdo estático", () => {
+  const { context, window } = browserContext();
+  vm.runInContext(establishmentsSource, context);
+  const result = window.CMSPublicEstablishmentsAdapter.resolveDocuments([
+    { id: "invalid", data: establishmentData("invalid", { name: "" }) },
+  ]);
+  assert.equal(result.state, "AUTHORITATIVE_INVALID");
+  assert.equal(result.source, "firestore");
+  assert.equal(result.rejectedCount, 1);
+  assert.deepEqual(Array.from(result.rejections[0].reasons), ["MISSING_NAME"]);
+});
+
 async function loadDataWithResults(routesResult, establishmentsResult) {
   const env = browserContext({
     TURISMO_PONTOS: [{ id: "static-point", nome: "Ponto", categoria: "Cultura" }],
@@ -166,15 +225,51 @@ test("SUCCESS dinâmico não mistura rotas estáticas stale", async () => {
   assert.equal(env.window.PUBLIC_CUTOVER_ALLOWED, true);
 });
 
-test("AUTHORITATIVE_EMPTY mantém somente static-precutover e bloqueia cutover", async () => {
+test("AUTHORITATIVE_EMPTY é autoridade e não ressuscita rotas estáticas", async () => {
   const env = await loadDataWithResults(
     { state: "AUTHORITATIVE_EMPTY", source: "firestore", authoritativeCount: 0, count: 0, items: [] },
     { state: "SUCCESS", source: "firestore", count: 1, items: [] },
   );
-  assert.equal(env.window.TURISMO_DATA_SOURCE_META.routesSource, "static-precutover");
+  assert.equal(env.window.TURISMO_DATA_SOURCE_META.routesSource, "firestore");
   assert.equal(env.window.TURISMO_DATA_SOURCE_META.routesCount, 0);
-  assert.equal(env.window.TURISMO_DATA.rotas.length, 1);
+  assert.equal(env.window.TURISMO_DATA.rotas.length, 0);
+  assert.equal(env.window.PUBLIC_CUTOVER_ALLOWED, true);
+});
+
+test("falha de rotas não bloqueia autoridade independente dos empreendimentos", async () => {
+  const env = await loadDataWithResults(
+    { state: "TECHNICAL_FAILURE", source: "static-fallback", items: [], fallbackReason: "network-unavailable" },
+    { state: "SUCCESS", source: "firestore", count: 1, items: [
+      { id: "cms-only", nome: "CMS", categoria: "Gastronomia" },
+    ] },
+  );
+  assert.equal(env.window.PUBLIC_CUTOVER_ALLOWED, true);
+  assert.equal(env.window.TURISMO_DATA.rotas[0].id, "static-route");
+  assert.deepEqual(Array.from(env.window.TURISMO_DATA.restaurantes, (item) => item.id), ["cms-only"]);
+});
+
+test("falha técnica de empreendimentos mantém apenas o fallback técnico desse domínio", async () => {
+  const env = await loadDataWithResults(
+    { state: "SUCCESS", source: "firestore", authoritativeCount: 1, items: [{ id: "rota-a" }] },
+    { state: "TECHNICAL_FAILURE", source: "static-fallback", count: 0, items: [], fallbackReason: "timeout" },
+  );
   assert.equal(env.window.PUBLIC_CUTOVER_ALLOWED, false);
+  assert.equal(env.window.TURISMO_DATA.pontos[0].id, "static-point");
+  assert.deepEqual(Array.from(env.window.TURISMO_DATA.rotas, (item) => item.id), ["rota-a"]);
+});
+
+test("renderer público usa a URL canônica e escapa conteúdo editorial", () => {
+  const target = { innerHTML: "", getAttribute: () => "restaurants" };
+  const env = browserContext();
+  env.window.document.querySelectorAll = () => [target];
+  env.window.Event = class Event { constructor(type) { this.type = type; } };
+  vm.runInContext(rendererSource, env.context);
+  env.window.PublicEstablishmentsRenderer.renderAll({ restaurantes: [
+    establishmentData("xss", { name: '<img src=x onerror="alert(1)">', seo: { canonicalPath: "javascript:alert(1)" } }),
+  ] });
+  assert.match(target.innerHTML, /href="\/local\?id=xss"/);
+  assert.doesNotMatch(target.innerHTML, /javascript:/);
+  assert.match(target.innerHTML, /&lt;img src=x onerror=&quot;alert\(1\)&quot;&gt;/);
 });
 
 test("busca reconstrói URL de rota dinâmica com slug", () => {

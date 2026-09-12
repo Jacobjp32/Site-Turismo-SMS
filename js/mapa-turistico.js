@@ -1141,10 +1141,15 @@
 
   function buildItems() {
     var data = window.TURISMO_DATA || {};
-    var points = (data.pontos || []).map(function (item) { return normalizeItem(item, "ponto"); });
+    function publicMapItems(items) {
+      return (items || []).filter(function (item) {
+        return !item || !item.display || item.display.mapVisible !== false;
+      });
+    }
+    var points = publicMapItems(data.pontos).map(function (item) { return normalizeItem(item, "ponto"); });
     var routes = (data.rotas || []).map(function (item) { return normalizeItem(item, "rota"); });
-    var lodging = (data.hospedagens || []).map(function (item) { return normalizeItem(item, "hospedagem"); });
-    var restaurants = (data.restaurantes || []).map(function (item) { return normalizeItem(item, "restaurante"); });
+    var lodging = publicMapItems(data.hospedagens).map(function (item) { return normalizeItem(item, "hospedagem"); });
+    var restaurants = publicMapItems(data.restaurantes).map(function (item) { return normalizeItem(item, "restaurante"); });
     var events = (data.eventos || []).map(function (item) { return normalizeItem(item, "evento"); });
     var services = (data.informacoesEssenciais || []).map(function (item) { return normalizeItem(item, "servico"); });
 

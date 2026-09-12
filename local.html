@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta name="referrer" content="strict-origin-when-cross-origin">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://vlibras.gov.br https://www.youtube.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https: blob: https://*.tile.openstreetmap.org; frame-src https://www.google.com https://www.youtube.com https://felt.com https://turismo-sms.firebaseapp.com; connect-src 'self' https://api.open-meteo.com https://turismo-sms-chatbot.jacobpimentel32.workers.dev https://graph.instagram.com https://www.google-analytics.com https://firestore.googleapis.com https://www.googleapis.com https://identitytoolkit.googleapis.com https://*.firebaseio.com https://*.tile.openstreetmap.org; media-src 'self' https:; object-src 'none'; base-uri 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://vlibras.gov.br https://www.youtube.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https: blob: https://*.tile.openstreetmap.org; frame-src https://www.google.com https://www.youtube.com https://felt.com https://turismo-sms.firebaseapp.com; connect-src 'self' https://api.open-meteo.com https://turismo-sms-chatbot.jacobpimentel32.workers.dev https://graph.instagram.com https://www.google-analytics.com https://firestore.googleapis.com https://www.googleapis.com https://identitytoolkit.googleapis.com https://firebaseinstallations.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://*.firebaseio.com https://*.tile.openstreetmap.org; media-src 'self' https:; object-src 'none'; base-uri 'self';">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-YPRT7FFFV8"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YPRT7FFFV8');</script>
     <title>Carregando... | Turismo São Mateus do Sul</title>
@@ -343,13 +343,25 @@
         footer a { color: var(--ouro); text-decoration: none; }
     </style>
     <script src="js/security-utils.js?v=site-public-b1-20260708"></script>
+    <script src="config.js?v=admin-e2e-publication-20260911"></script>
     <script src="js/locais-data.js?v=agro-02-20260909"></script>
+    <script src="js/rotas-data.js?v=site-public-b1-20260708"></script>
+    <script src="js/data/pontos-turisticos.js?v=site-public-b1-20260708"></script>
+    <script src="js/data/rotas.js?v=site-public-b1-20260708"></script>
+    <script src="js/data/hospedagens.js?v=site-public-b1-20260708"></script>
+    <script src="js/data/restaurantes.js?v=site-public-b1-20260708"></script>
+    <script src="js/data/eventos.js?v=agro-04-20260909"></script>
+    <script src="js/data/informacoes-essenciais.js?v=site-public-b1-20260708"></script>
+    <script src="js/data/turismo-data-adapter.js?v=site-public-b1-20260708"></script>
+    <script src="js/cms-public-routes-adapter.js?v=admin-e2e-publication-20260911"></script>
+    <script src="js/cms-public-establishments-adapter.js?v=admin-e2e-publication-20260911"></script>
+    <script src="js/data/turismo-data.js?v=admin-e2e-publication-20260911"></script>
     <script src="js/site-meta.js?v=site-map-compact-20260805-1501" defer></script>
     <script src="js/breadcrumbs.js?v=site-public-b1-20260708"></script>
     <link rel="stylesheet" href="css/tourism-mascot.css?v=site-public-b1-20260708">
 </head>
 <body>
-    <script src="js/nav-shared.js?v=site-agrosamas-hub-20260909-r2"></script>
+    <script src="js/nav-shared.js?v=admin-e2e-publication-20260911"></script>
 
 <!-- Lightbox -->
 <div class="lb" id="lb" onclick="lbClose()">
@@ -361,8 +373,10 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-(function () {
+(async function () {
     "use strict";
+
+    await Promise.resolve(window.TURISMO_DATA_READY || window.TURISMO_DATA);
 
     var SITE = "https://turismo.saomateusdosul.pr.gov.br";
     var FALLBACK_IMG = "images/FOTO_GERAL_SAO_MATEUS_DO_SUL.jpg";
@@ -476,7 +490,14 @@
     // Resolve slug legado → id canônico (ex.: casa-memoria-padre-bauer → casa-da-memoria).
     var aliases = window.locaisAliases || {};
     var id = (rawId && aliases[rawId]) ? aliases[rawId] : rawId;
-    var local = id && window.locaisData ? window.locaisData[id] : null;
+    var publicData = window.TURISMO_DATA || {};
+    var publicLocals = []
+        .concat(Array.isArray(publicData.pontos) ? publicData.pontos : [])
+        .concat(Array.isArray(publicData.hospedagens) ? publicData.hospedagens : [])
+        .concat(Array.isArray(publicData.restaurantes) ? publicData.restaurantes : []);
+    var local = id ? publicLocals.find(function (item) {
+        return item && (String(item.id || "") === id || String(item.slug || "") === id);
+    }) : null;
     var root = document.getElementById("page-root");
 
     // ── Estados de erro amigáveis (id ausente ou inexistente) ──
@@ -504,18 +525,21 @@
     var descricao = SEC.value(local.descricao, "");
 
     // ── SEO dinâmico por id (canonical/robots/OG). Não colapsa as fichas numa só URL. ──
-    var pageUrl = SITE + "/local?id=" + encodeURIComponent(id);
-    var metaDesc = descricao ? truncateMeta(descricao) : SEC.value(local.subtitulo, nome);
-    document.title = nome + " | Turismo São Mateus do Sul";
+    var canonicalPath = SEC.value(local.seo && local.seo.canonicalPath, "");
+    if (!/^\/(?!\/)/.test(canonicalPath)) canonicalPath = "/local?id=" + encodeURIComponent(id);
+    var pageUrl = SITE + canonicalPath;
+    var metaDesc = SEC.value(local.seo && local.seo.description, "") || (descricao ? truncateMeta(descricao) : SEC.value(local.subtitulo, nome));
+    var metaTitle = SEC.value(local.seo && local.seo.title, "") || (nome + " | Turismo São Mateus do Sul");
+    document.title = metaTitle;
     var descEl = document.querySelector('meta[name="description"]');
     if (descEl) descEl.setAttribute("content", metaDesc);
     setMeta("local-canonical", "href", pageUrl);
-    setMeta("og-title", "content", nome + " | Turismo São Mateus do Sul");
+    setMeta("og-title", "content", metaTitle);
     setMeta("og-desc", "content", metaDesc);
     setMeta("og-url", "content", pageUrl);
     setMeta("og-image", "content", absUrl(local.imagem || FALLBACK_IMG));
     setMeta("og-image-alt", "content", nome + " em São Mateus do Sul");
-    setMeta("twitter-title", "content", nome + " | Turismo São Mateus do Sul");
+    setMeta("twitter-title", "content", metaTitle);
     setMeta("twitter-desc", "content", metaDesc);
     setMeta("twitter-image", "content", absUrl(local.imagem || FALLBACK_IMG));
     setMeta("twitter-image-alt", "content", nome + " em São Mateus do Sul");
@@ -573,12 +597,23 @@
         var telDigits = String(local.telefone).replace(/\D/g, "");
         sociais.push('<a class="btn-social phone" href="tel:' + telDigits + '">📞 ' + SEC.html(local.telefone) + '</a>');
     }
+    if (SEC.value(local.whatsapp, "")) {
+        var whatsappDigits = String(local.whatsapp).replace(/\D/g, "");
+        sociais.push('<a class="btn-social phone" href="' + SEC.url("https://wa.me/" + whatsappDigits, "#") + '" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>');
+    }
+    if (SEC.value(local.email, "")) {
+        sociais.push('<a class="btn-social website" href="mailto:' + SEC.attr(local.email) + '">✉️ ' + SEC.html(local.email) + '</a>');
+    }
     if (SEC.value(local.instagram, "")) {
         var handle = String(local.instagram).replace("@", "");
         sociais.push('<a class="btn-social instagram" href="' + SEC.url("https://instagram.com/" + handle, "#") + '" target="_blank" rel="noopener noreferrer">📸 ' + SEC.html(local.instagram) + '</a>');
     }
     if (SEC.value(local.site, "")) {
         sociais.push('<a class="btn-social website" href="' + SEC.url(local.site, "#") + '" target="_blank" rel="noopener noreferrer">' + SEC.html(t("officialSite")) + '</a>');
+    }
+    if (SEC.value(local.facebook, "")) {
+        var facebookUrl = /^https?:\/\//i.test(local.facebook) ? local.facebook : "https://facebook.com/" + String(local.facebook).replace(/^@/, "");
+        sociais.push('<a class="btn-social website" href="' + SEC.url(facebookUrl, "#") + '" target="_blank" rel="noopener noreferrer">Facebook</a>');
     }
 
     // ── Tags de rota (guardado: rota pode faltar) ──
@@ -589,11 +624,11 @@
         : '<span class="info-unavailable">' + SEC.html(t("unavailable")) + '</span>';
 
     // ── Relacionados (até 3, exceto o atual) ──
-    var relacionados = Object.keys(window.locaisData)
-        .filter(function (key) { return key !== id; })
+    var relacionados = publicLocals
+        .filter(function (item) { return item && String(item.id || item.slug || "") !== id; })
         .slice(0, 3)
-        .map(function (key) {
-            var l = window.locaisData[key];
+        .map(function (l) {
+            var key = l.id || l.slug;
             var relImg = SEC.url(l.imagem, FALLBACK_IMG) || FALLBACK_IMG;
             return '<a href="/local?id=' + encodeURIComponent(l.id || key) + '" class="rel-card">' +
                 '<img src="' + relImg + '" alt="' + SEC.attr(SEC.value(l.nome, "")) + '" onerror="imgFallback(this)" loading="lazy" decoding="async" width="640" height="360">' +

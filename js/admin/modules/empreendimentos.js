@@ -1,24 +1,23 @@
 /**
  * modules/empreendimentos.js — Admin CMS · CMS-2B
  * ------------------------------------------------
- * CRUD interno de empreendimentos usando o contrato CMS-2A.
+ * Gestao editorial de empreendimentos usando o contrato CMS-2A/C1 V2.
  *
  * Collection Firestore: cms_establishments
  * Storage: cms-media + uid + establishments + establishmentId + arquivo
  *
- * Escopo deste bloco:
+ * Contrato atual:
  *  - listar, pesquisar e filtrar;
- *  - criar e editar registros internos;
- *  - arquivar, restaurar e excluir registros internos controlados;
+ *  - criar e editar rascunhos;
+ *  - publicar, arquivar, restaurar e excluir registros controlados;
  *  - visualizar detalhes;
  *  - upload de imagem principal e galeria;
- *  - timestamps e auditoria basica.
+ *  - timestamps, concorrencia otimista e auditoria basica;
+ *  - refletir documentos published no datasource publico.
  *
  * Fora do escopo:
- *  - ligar o site publico ao Firestore;
  *  - migrar dados estaticos;
  *  - aplicar solicitacoes aprovadas;
- *  - publicar no site publico;
  *  - apagar midias do Storage ao excluir o registro.
  */
 (function () {
@@ -31,7 +30,6 @@
     var MAX_IMAGE_BYTES = 5 * 1024 * 1024;
     var IMAGE_TYPE_REGEX = /^image\/(jpeg|jpg|png|webp)$/i;
     var STATUSES = ["draft", "published", "archived"];
-    var EDITABLE_STATUSES = ["draft", "archived"];
     var IMAGE_STATUSES = ["active", "removed"];
     var SCHEMA_VERSION = 2;
     var RECONCILIATION_MODE = "SEMANTIC_IDEMPOTENT_EQUIVALENCE";
@@ -55,7 +53,6 @@
         source: ["source"],
         lifecycle: ["status", "publishing"]
     };
-    var PUBLIC_STATIC_NOTICE = "Isso altera apenas o catalogo interno do CMS. O site publico ainda usa dados estaticos.";
     var CATEGORIES = [
         { id: "gastronomia", label: "Gastronomia" },
         { id: "hospedagem", label: "Hospedagem" },
@@ -80,6 +77,7 @@
         galleryPreviewUrls: [],
         editingBase: null,
         pendingSaga: null,
+        pendingUploadedMedia: [],
         uploadCache: new WeakMap(),
         draftShellId: ""
     };
@@ -111,6 +109,19 @@
     function limit(value, max) {
         var text = clean(value);
         return text.length > max ? text.slice(0, max) : text;
+    }
+
+    var MEDIA_REFERENCE_EXTENSIONS = /\.(?:jpe?g|png|webp|gif|avif|svg|bmp|mp4|webm|ogv|mov|m4v)$/i;
+    var MEDIA_REFERENCE_RELATIVE_CHARS = /^\/?[A-Za-z0-9._~\-/%]+$/;
+
+    function isValidMediaReference(value) {
+        var raw = typeof value === "string" ? value.trim() : "";
+        if (!raw) return true;
+        if (/[\u0000-\u001F\u007F]/.test(raw)) return false;
+        if (/\s/.test(raw)) return false;
+        if (/^https?:\/\//i.test(raw)) return true;
+        if (!MEDIA_REFERENCE_RELATIVE_CHARS.test(raw)) return false;
+        return MEDIA_REFERENCE_EXTENSIONS.test(raw);
     }
 
     function ensureArray(value) {
@@ -688,8 +699,8 @@
                 '</div>' +
             '</div>' +
             '<div class="card">' +
-                '<div class="card-header"><h2>Catalogo interno do CMS</h2></div>' +
-                '<p class="admin-helper-text">CRUD interno para preparar a infraestrutura de empreendimentos. Este modulo nao liga o site publico ao Firestore, nao migra dados estaticos e nao aplica solicitacoes automaticamente.</p>' +
+                '<div class="card-header"><h2>Catalogo editorial publico</h2></div>' +
+                '<p class="admin-helper-text">Rascunhos ficam privados. Documentos publicados sao consumidos pelo portal sem editar arquivos estaticos; arquivados deixam de aparecer. Solicitacoes de terceiros continuam exigindo revisao e aplicacao administrativa.</p>' +
                 '<div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:flex-end;margin-top:0.75rem;">' +
                     '<div class="admin-field" style="margin:0;min-width:220px;">' +
                         '<label for="establishmentSearch">Pesquisa</label>' +
@@ -701,7 +712,7 @@
                             { value: "all", label: "Todos" },
                             { value: "draft", label: "Rascunho" },
                             { value: "archived", label: "Arquivado" },
-                            { value: "published", label: "Publicado (sem acao neste bloco)" }
+                            { value: "published", label: "Publicado" }
                         ], state.filterStatus, "AdminEstablishmentsModule.onFilterChange()") +
                     '</div>' +
                     '<div class="admin-field" style="margin:0;min-width:180px;">' +
@@ -834,13 +845,27 @@
             '<td><small>' + escapeHtml(formatDateTime(item.updatedAt || item.createdAt) || "—") + '</small></td>' +
             '<td><div style="display:flex;gap:0.35rem;flex-wrap:wrap;">' +
                 '<button class="btn-secondary" type="button" onclick="AdminEstablishmentsModule.viewDetails(\'' + jsId + '\')">Ver</button>' +
-                '<button class="btn-secondary" type="button" onclick="AdminEstablishmentsModule.openForm(\'' + jsId + '\')">Editar</button>' +
+                (item.status === "archived"
+                    ? '<button class="btn-secondary" type="button" disabled title="Restaure como rascunho antes de editar">Editar</button>'
+                    : '<button class="btn-secondary" type="button" onclick="AdminEstablishmentsModule.openForm(\'' + jsId + '\')">Editar</button>') +
+                lifecycleButtons(item, jsId) +
                 (item.status === "archived"
                     ? '<button class="btn-primary" type="button" onclick="AdminEstablishmentsModule.restore(\'' + jsId + '\')">Restaurar</button>'
                     : '<button class="btn-secondary" type="button" onclick="AdminEstablishmentsModule.archive(\'' + jsId + '\')">Arquivar</button>') +
                 deleteButton(item, jsId) +
             '</div></td>' +
-            '</tr>';
+        '</tr>';
+    }
+
+    function lifecycleButtons(item, jsId) {
+        if (item.status === "published") {
+            return '<button class="btn-secondary" type="button" onclick="AdminEstablishmentsModule.unpublish(\'' + jsId + '\')">Despublicar</button>';
+        }
+        if (item.status === "draft") {
+            var label = hasResumeEditSession(item) ? "Concluir e republicar" : "Publicar";
+            return '<button class="btn-primary" type="button" onclick="AdminEstablishmentsModule.publish(\'' + jsId + '\')">' + label + '</button>';
+        }
+        return '';
     }
 
     function deleteButton(item, jsId) {
@@ -860,7 +885,7 @@
     function statusBadge(status) {
         var normalized = clean(status) || "draft";
         if (normalized === "archived") return '<span class="badge badge-danger">Arquivado</span>';
-        if (normalized === "published") return '<span class="badge badge-info">Publicado (interno)</span>';
+        if (normalized === "published") return '<span class="badge badge-success">Publicado no portal</span>';
         return '<span class="badge badge-warning">Rascunho</span>';
     }
 
@@ -870,8 +895,13 @@
 
     function openForm(id) {
         releasePreviewUrls();
-        state.editingId = clean(id);
-        var existing = state.editingId ? findItem(state.editingId) : null;
+        var requestedId = clean(id);
+        var existing = requestedId ? findItem(requestedId) : null;
+        if (existing && existing.status === "archived") {
+            toast("Restaure o empreendimento arquivado como rascunho antes de editar.", "error");
+            return;
+        }
+        state.editingId = requestedId;
         var uid = currentUid();
         var item = existing || defaultDoc("", uid);
         state.editingBase = existing ? cloneValue(item) : null;
@@ -962,8 +992,8 @@
             : '<p class="admin-helper-text">Nao ha imagens removidas para restaurar.</p>';
 
         return '<div class="card" style="margin-top:1rem;">' +
-            '<div class="card-header"><h2>Gestao editorial da galeria</h2><span class="badge badge-info">Catalogo interno</span></div>' +
-            '<p class="admin-helper-text">' + PUBLIC_STATIC_NOTICE + ' Nenhuma acao desta area apaga arquivos do Storage.</p>' +
+            '<div class="card-header"><h2>Gestao editorial da galeria</h2><span class="badge badge-info">Fonte publica</span></div>' +
+            '<p class="admin-helper-text">Em documentos publicados, alteracoes confirmadas sao republicadas no portal. Remover uma imagem da galeria nao apaga o arquivo do Storage.</p>' +
             '<h3 style="margin:1rem 0 0.75rem;font-size:1rem;">Imagem principal atual</h3>' +
             mainHtml +
             '<h3 style="margin:1.25rem 0 0.75rem;font-size:1rem;">Galeria ativa</h3>' +
@@ -979,7 +1009,7 @@
             ? '<p class="admin-helper-text" role="status"><strong>Edicao publicada interrompida.</strong> Revise os dados persistidos e conclua o salvamento para republicar.</p>'
             : '';
         return '<div class="card" id="establishmentsEditorCard">' +
-            '<div class="card-header"><h2>' + escapeHtml(title) + '</h2><span class="badge badge-info">Uso interno</span></div>' +
+            '<div class="card-header"><h2>' + escapeHtml(title) + '</h2>' + statusBadge(item.status) + '</div>' +
             resumeNotice +
             '<form id="establishmentForm" onsubmit="AdminEstablishmentsModule.submitForm(event)">' +
                 '<input type="hidden" id="est_form_editingId" value="' + escapeAttr(item.__id || "") + '">' +
@@ -1013,13 +1043,13 @@
                     textareaField("Rotas relacionadas (IDs)", "est_routeIds", joinList(item.relationships.routeIds), false) +
                     field("Rota legada", "est_legacyRoute", item.relationships.legacyRoute, "text") +
                     field("Nome da rota legada", "est_legacyRouteName", item.relationships.legacyRouteName, "text") +
-                    checkboxField("Destaque interno", "est_featured", item.display.featured) +
+                    checkboxField("Destaque na Home", "est_featured", item.display.featured) +
                     field("Prioridade", "est_priority", item.display.priority, "number") +
-                    checkboxField("Visivel no mapa futuro", "est_mapVisible", item.display.mapVisible) +
+                    checkboxField("Visivel no mapa", "est_mapVisible", item.display.mapVisible) +
                     checkboxField("Reivindicavel no Portal", "est_claimable", item.display.claimable) +
-                    field("Titulo SEO futuro", "est_seoTitle", item.seo.title, "text") +
-                    textareaField("Descricao SEO futura", "est_seoDescription", item.seo.description, false) +
-                    field("Canonical path futuro", "est_canonicalPath", item.seo.canonicalPath, "text") +
+                    field("Titulo SEO", "est_seoTitle", item.seo.title, "text") +
+                    textareaField("Descricao SEO", "est_seoDescription", item.seo.description, false) +
+                    field("Canonical path", "est_canonicalPath", item.seo.canonicalPath, "text") +
                     field("Origem", "est_sourceOrigin", item.source.origin || "admin", "text") +
                     field("Arquivo de origem", "est_sourceFile", item.source.sourceFile, "text") +
                     field("ID original", "est_originalId", item.source.originalId, "text") +
@@ -1031,7 +1061,7 @@
                 '<div class="card" style="margin-top:1rem;">' +
                     '<div class="card-header"><h2>Imagem principal</h2></div>' +
                     '<div class="admin-modal-grid">' +
-                        field("URL da imagem principal", "est_mainImageUrl", mainImage.url, "url") +
+                        field("URL da imagem principal", "est_mainImageUrl", mainImage.url, "text") +
                         field("Alt da imagem principal", "est_mainImageAlt", mainImage.alt, "text") +
                         field("Legenda da imagem principal", "est_mainImageCaption", mainImage.caption, "text") +
                         field("Credito da imagem principal", "est_mainImageCredit", mainImage.credit, "text") +
@@ -1054,12 +1084,14 @@
                         '<p class="admin-helper-text">As imagens selecionadas serao adicionadas ao final da galeria ao salvar.</p>' +
                         '<div id="est_galleryPreview"></div>' +
                     '</div>' +
-                    field("Video URL futuro", "est_videoUrl", item.media.videoUrl, "url") +
+                    field("Video URL", "est_videoUrl", item.media.videoUrl, "text") +
                     textareaField("Creditos/fontes de midia", "est_sourceCredits", item.media.sourceCredits, false) +
                 '</div>' +
                 '<div class="admin-modal-footer" style="margin-top:1rem;">' +
                     '<button class="btn-secondary" type="button" onclick="AdminEstablishmentsModule.cancelForm()">Cancelar</button>' +
-                    '<button class="btn-primary" type="submit" id="establishmentSaveBtn">Salvar rascunho interno</button>' +
+                    '<button class="btn-primary" type="submit" id="establishmentSaveBtn">' +
+                        (item.status === "published" || hasResumeEditSession(item) ? "Salvar e publicar alteracoes" : "Salvar rascunho") +
+                    '</button>' +
                 '</div>' +
             '</form>' +
         '</div>';
@@ -1100,10 +1132,15 @@
 
     function readonlyStatusField(status) {
         var normalized = STATUSES.indexOf(status) !== -1 ? status : "draft";
+        var explanation = normalized === "published"
+            ? "Publicado: o portal consome este documento. Ao salvar uma edicao, o fluxo republica as alteracoes."
+            : normalized === "archived"
+                ? "Arquivado: removido da exibicao publica. Restaure como rascunho antes de editar ou publicar."
+                : "Rascunho: privado no Admin ate uma acao explicita de publicar.";
         return '<div class="admin-field">' +
             '<label>Status</label>' +
             '<input class="admin-input" value="' + escapeAttr(normalized) + '" readonly>' +
-            '<p class="admin-helper-text">Este bloco nao publica no site. O CRUD salva rascunhos internos e permite arquivar/restaurar.</p>' +
+            '<p class="admin-helper-text">' + explanation + '</p>' +
         '</div>';
     }
 
@@ -1210,7 +1247,7 @@
         base.name = limit(value("est_name"), 160);
         base.categoryId = categoryId;
         base.categoryLabel = categoryLabel(categoryId, value("est_categoryId"));
-        base.status = EDITABLE_STATUSES.indexOf(base.status) !== -1 ? base.status : "draft";
+        base.status = "draft";
         base.content = {
             summary: limit(value("est_summary"), 500),
             description: limit(value("est_description"), 4000),
@@ -1299,6 +1336,8 @@
         if (doc.location.coordinates.lat != null && doc.location.coordinates.lng == null) return "Latitude e longitude devem ser preenchidas juntas.";
         if (doc.location.coordinates.lat != null && (doc.location.coordinates.lat < -90 || doc.location.coordinates.lat > 90)) return "Latitude invalida.";
         if (doc.location.coordinates.lng != null && (doc.location.coordinates.lng < -180 || doc.location.coordinates.lng > 180)) return "Longitude invalida.";
+        if (!isValidMediaReference(doc.media.mainImage.url)) return "URL da imagem principal invalida. Use uma URL http(s) ou um caminho de imagem valido.";
+        if (!isValidMediaReference(doc.media.videoUrl)) return "Video URL invalido. Use uma URL http(s) ou um caminho de video valido.";
         return "";
     }
 
@@ -1467,7 +1506,7 @@
         if (!button) return;
         button.disabled = false;
         button.textContent = retry ? "Tentar novamente" : message;
-        if (!retry && message !== "Salvar rascunho interno") button.disabled = true;
+        if (!retry && message !== "Salvar rascunho" && message !== "Salvar e publicar alteracoes") button.disabled = true;
     }
 
     function shellPayload(id, uid) {
@@ -1528,8 +1567,10 @@
     }
 
     function prepareUploads(storage, uid, payload, mainFile, galleryFiles) {
+        var uploaded = [];
         var mainPromise = mainFile
             ? uploadOnce(storage, mainFile, uid, payload.id, "main", "main").then(function (image) {
+                uploaded.push(cloneValue(image));
                 payload.media.mainImage = Object.assign({}, payload.media.mainImage, image, {
                     alt: payload.media.mainImage.alt,
                     caption: payload.media.mainImage.caption,
@@ -1543,12 +1584,25 @@
                 return uploadOnce(storage, file, uid, payload.id, "gallery", "gallery-" + index);
             }));
         }).then(function (uploadedGallery) {
+            uploadedGallery.forEach(function (image) { uploaded.push(cloneValue(image)); });
             payload.media.gallery = deduplicateMedia(payload.media.gallery.concat(uploadedGallery))
                 .map(function (image, index) {
                     image.position = index + 1;
                     return image;
                 });
+            state.pendingUploadedMedia = uploaded;
             return payload;
+        });
+    }
+
+    function uploadedMediaReferenced(raw, uploaded) {
+        var media = raw && raw.media || {};
+        var references = [media.mainImage].concat(ensureArray(media.gallery)).map(function (image) {
+            return clean(image && (image.path || image.url));
+        }).filter(Boolean);
+        return ensureArray(uploaded).every(function (image) {
+            var identity = clean(image && (image.path || image.url));
+            return !!identity && references.indexOf(identity) !== -1;
         });
     }
 
@@ -1684,7 +1738,12 @@
             var base = normalizeDoc(snapshot.data() || {}, snapshot.id);
             var nextSaga;
             if (completedSaga.resumePhase === "groups") {
-                var desired = completedSaga.resumePayload;
+                var desired = normalizeDoc(completedSaga.resumePayload, base.__id || base.id);
+                // Lifecycle contains server timestamps. Always carry the real
+                // readback into the next phase instead of a local sentinel.
+                desired.status = base.status;
+                desired.publishing = cloneValue(base.publishing);
+                desired.editSession = base.editSession ? cloneValue(base.editSession) : null;
                 nextSaga = buildSaga(
                     completedSaga.ref,
                     desired,
@@ -1692,12 +1751,12 @@
                     completedSaga.uid,
                     groupsToWrite(base, desired)
                 );
-                nextSaga.flow = "form";
+                nextSaga.flow = completedSaga.flow || "canonical-update";
                 nextSaga.resumePhase = completedSaga.resumeWasPublished ? "publish" : "finish";
             } else if (completedSaga.resumePhase === "publish") {
                 var published = lifecyclePublished(base, completedSaga.uid);
                 nextSaga = buildSaga(completedSaga.ref, published, base, completedSaga.uid, ["lifecycle"]);
-                nextSaga.flow = "form";
+                nextSaga.flow = completedSaga.flow || "canonical-update";
                 nextSaga.resumePhase = "finish";
             }
             return executeSaga(db, nextSaga).then(function () {
@@ -1746,12 +1805,18 @@
         var base;
         var saga;
         setSaveProgress(editingId ? "Salvando..." : "Criando rascunho...", false);
+        state.pendingUploadedMedia = [];
         Promise.resolve().then(function () {
             if (editingId) {
                 base = state.editingBase || normalizeDoc(existing, existing.__id);
                 return ref.get().then(function (snapshot) {
                     if (!snapshot.exists) throw conflictError();
                     var current = normalizeDoc(snapshot.data() || {}, snapshot.id);
+                    if (current.status === "archived") {
+                        var archivedError = new Error("Restaure o empreendimento arquivado como rascunho antes de editar.");
+                        archivedError.code = "establishment-archived";
+                        throw archivedError;
+                    }
                     if (current.revision !== base.revision) throw conflictError();
                 });
             }
@@ -1777,42 +1842,23 @@
         }).then(function () {
             payload.status = "draft";
             payload.publishing = lifecycleDraft(payload).publishing;
-            if (base.status === "published" || base.status === "archived") {
-                setSaveProgress(base.status === "published" ? "Retirando publicacao..." : "Restaurando rascunho...", false);
-                var draftDesired = base.status === "published"
-                    ? lifecycleEditDraft(base, uid)
-                    : lifecycleDraft(base);
-                saga = buildSaga(ref, draftDesired, base, uid, ["lifecycle"]);
-                saga.flow = "form";
-                saga.resumePhase = "groups";
-                saga.resumePayload = payload;
-                saga.resumeWasPublished = shouldResumePublished;
-                return executeSaga(db, saga).then(function () {
-                    base = draftDesired;
-                    base.revision = saga.expectedRevision;
-                    base.validatedGroups.lifecycle = SCHEMA_VERSION;
-                    payload.editSession = draftDesired.editSession;
-                });
+            var initialSaga;
+            if (base.status === "published") {
+                setSaveProgress("Retirando publicacao...", false);
+                var draftDesired = lifecycleEditDraft(base, uid);
+                initialSaga = buildSaga(ref, draftDesired, base, uid, ["lifecycle"]);
+                initialSaga.resumePhase = "groups";
+                initialSaga.resumePayload = payload;
+                initialSaga.resumeWasPublished = shouldResumePublished;
+            } else {
+                initialSaga = buildSaga(ref, payload, base, uid, groupsToWrite(base, payload));
+                initialSaga.resumePhase = shouldResumePublished ? "publish" : "finish";
             }
-            return null;
-        }).then(function () {
-            var groups = groupsToWrite(base, payload);
-            saga = buildSaga(ref, payload, base, uid, groups);
-            saga.flow = "form";
-            saga.resumePhase = shouldResumePublished ? "publish" : "finish";
-            return executeSaga(db, saga);
-        }).then(function () {
-            if (!shouldResumePublished) return null;
-            setSaveProgress("Republicando...", false);
-            var published = lifecyclePublished(payload, uid);
-            var publishBase = normalizeDoc(payload, payload.id);
-            publishBase.revision = saga.expectedRevision;
-            publishBase.validatedGroups = Object.assign({}, payload.validatedGroups || {});
-            GROUP_ORDER.forEach(function (group) { publishBase.validatedGroups[group] = SCHEMA_VERSION; });
-            saga = buildSaga(ref, published, publishBase, uid, ["lifecycle"]);
-            saga.flow = "form";
-            saga.resumePhase = "finish";
-            return executeSaga(db, saga);
+            initialSaga.flow = "form";
+            saga = initialSaga;
+            return executeSaga(db, initialSaga).then(function () {
+                return resumeSagaWorkflow(db, initialSaga);
+            });
         })
             .then(function () {
                 finishSave();
@@ -1822,15 +1868,33 @@
             });
 
         function finishSave() {
-            toast("Empreendimento salvo como registro interno.", "success");
+            state.pendingUploadedMedia = [];
+            toast(shouldResumePublished
+                ? "Alteracoes salvas e publicadas no portal."
+                : "Rascunho salvo. Ele permanece fora do portal ate ser publicado.", "success");
             cancelForm();
             return load();
         }
 
         function failSave(error) {
+            if (state.pendingUploadedMedia.length) {
+                ref.get().then(function (snapshot) {
+                    var linked = snapshot.exists && uploadedMediaReferenced(snapshot.data() || {}, state.pendingUploadedMedia);
+                    toast(linked
+                        ? "Upload confirmado e midia vinculada ao rascunho. Tente novamente para concluir a publicacao."
+                        : "Upload confirmado, mas o vinculo ao documento ainda esta pendente. Tentar novamente reutiliza o mesmo objeto nesta sessao.", "error");
+                }).catch(function () {
+                    toast("Upload confirmado; nao foi possivel verificar o vinculo. Nao selecione outro arquivo antes de tentar novamente.", "error");
+                });
+            }
             if (error && error.code === "establishment-conflict") {
                 toast(error.message, "error");
                 setSaveProgress("Tentar novamente", true);
+                return;
+            }
+            if (error && error.code === "establishment-archived") {
+                toast(error.message, "error");
+                setSaveProgress("Salvar rascunho", true);
                 return;
             }
             toast("Falha parcial. O rascunho foi preservado. Tente novamente.", "error");
@@ -1880,7 +1944,7 @@
             toast("Apenas registros arquivados podem ser restaurados.", "info");
             return;
         }
-        if (!window.confirm('Restaurar "' + (item.name || item.__id) + '" como rascunho interno?')) return;
+        if (!window.confirm('Restaurar "' + (item.name || item.__id) + '" como rascunho privado?')) return;
         var uid = currentUid();
         var db = getDb();
         if (!db || !uid) {
@@ -1892,6 +1956,67 @@
             return load();
         }).catch(function (error) {
             handleWriteError(error, "restaurar empreendimento");
+        });
+    }
+
+    function publish(id) {
+        var item = findItem(id);
+        var db = getDb();
+        var uid = currentUid();
+        if (!item || !db || !uid) {
+            toast("Firebase ou sessao admin indisponivel.", "error");
+            return;
+        }
+        if (item.status !== "draft") {
+            toast("Apenas rascunhos podem ser publicados.", "info");
+            return;
+        }
+        if (!window.confirm('Publicar "' + (item.name || item.__id) + '" no portal?')) return;
+        var ref = db.collection(COLLECTION).doc(item.__id);
+        return ref.get().then(function (snapshot) {
+            if (!snapshot.exists) throw conflictError();
+            var base = normalizeDoc(snapshot.data() || {}, snapshot.id);
+            if (base.status !== "draft") throw conflictError();
+            var validation = validateDocForSave(base);
+            if (validation) {
+                var validationError = new Error(validation);
+                validationError.code = "establishment-invalid";
+                throw validationError;
+            }
+            var missingGroups = GROUP_ORDER.filter(function (group) {
+                return group !== "lifecycle" && base.validatedGroups[group] !== SCHEMA_VERSION;
+            });
+            if (missingGroups.length) {
+                var markerError = new Error("Salve o rascunho completo antes de publicar. Grupos pendentes: " + missingGroups.join(", ") + ".");
+                markerError.code = "establishment-invalid";
+                throw markerError;
+            }
+            return executeSaga(db, buildSaga(ref, lifecyclePublished(base, uid), base, uid, ["lifecycle"]));
+        }).then(function () {
+            toast("Empreendimento publicado no portal.", "success");
+            return load();
+        }).catch(function (error) {
+            if (error && error.code === "establishment-invalid") {
+                toast(error.message, "error");
+                return;
+            }
+            handleWriteError(error, "publicar empreendimento");
+        });
+    }
+
+    function unpublish(id) {
+        var item = findItem(id);
+        if (!item) return;
+        if (item.status !== "published") {
+            toast("Apenas documentos publicados podem ser despublicados.", "info");
+            return;
+        }
+        if (!window.confirm('Despublicar "' + (item.name || item.__id) + '"? Ele deixara de aparecer no portal e permanecera como rascunho.')) return;
+        return runLifecycleAction(item.__id, lifecycleDraft).then(function () {
+            toast("Empreendimento despublicado e preservado como rascunho.", "success");
+            return load();
+        }).catch(function (error) {
+            handleWriteError(error, "despublicar empreendimento");
         });
     }
 
@@ -1927,7 +2052,7 @@
             }
             var label = current.slug || current.__id || current.name;
             var typed = window.prompt(
-                'Esta ação é definitiva e remove o registro interno do CMS. O site público ainda usa dados estáticos neste momento.\n\nDigite "' +
+                'Esta ação é definitiva e remove o documento editorial. Se ele estava arquivado, continuará ausente do portal. O arquivo de mídia não será apagado.\n\nDigite "' +
                 label +
                 '" para confirmar a exclusão.'
             );
@@ -1936,11 +2061,11 @@
                 toast("Exclusao cancelada: confirmacao nao confere com o slug ou nome.", "error");
                 return false;
             }
-            if (!window.confirm('Excluir definitivamente "' + (current.name || current.__id) + '" do CMS interno?')) return false;
+            if (!window.confirm('Excluir definitivamente "' + (current.name || current.__id) + '" do CMS?')) return false;
             return ref.delete();
         }).then(function (deleted) {
             if (deleted === false) return null;
-            toast("Empreendimento excluido do CMS interno.", "success");
+            toast("Empreendimento excluido do CMS.", "success");
             cancelForm();
             return load();
         }).catch(function (error) {
@@ -1980,21 +2105,13 @@
             '</tbody></table></div>' +
             '<div class="admin-modal-footer" style="margin-top:1rem;">' +
                 '<button class="btn-secondary" type="button" onclick="AdminEstablishmentsModule.cancelForm()">Fechar</button>' +
-                '<button class="btn-primary" type="button" onclick="AdminEstablishmentsModule.openForm(\'' + escapeJs(item.__id) + '\')">Editar</button>' +
+                (item.status === "archived"
+                    ? '<button class="btn-secondary" type="button" disabled title="Restaure como rascunho antes de editar">Editar</button>'
+                    : '<button class="btn-primary" type="button" onclick="AdminEstablishmentsModule.openForm(\'' + escapeJs(item.__id) + '\')">Editar</button>') +
             '</div>' +
         '</div>' +
         buildMediaManager(item);
         target.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    function mediaAuditPayload(fields, uid, reason) {
-        var payload = Object.assign({}, fields || {});
-        payload.updatedAt = serverTimestamp();
-        payload.updatedBy = uid;
-        payload["review.lastMediaEditedAt"] = serverTimestamp();
-        payload["review.lastMediaEditedBy"] = uid;
-        payload["review.mediaEditReason"] = limit(reason, 240);
-        return payload;
     }
 
     function runLifecycleAction(id, mutate) {
@@ -2023,57 +2140,84 @@
         });
     }
 
-    function writeMediaUpdate(id, fields, successMessage, reason) {
-        var item = findItem(id);
+    function groupsForFieldPaths(fields) {
+        var groups = [];
+        Object.keys(fields || {}).forEach(function (path) {
+            var root = path.split(".")[0];
+            var group = root === "relationships"
+                ? (path.indexOf("relatedPlaceIds") !== -1
+                    ? "relationshipsRelatedPlaceIds"
+                    : path.indexOf("relatedEventIds") !== -1
+                        ? "relationshipsRelatedEventIds"
+                        : "relationshipsRouteIds")
+                : root === "slug" || root === "name" || root === "categoryId" || root === "categoryLabel"
+                    ? "core"
+                    : root;
+            if (GROUP_ORDER.indexOf(group) !== -1 && groups.indexOf(group) === -1) groups.push(group);
+        });
+        return GROUP_ORDER.filter(function (group) { return groups.indexOf(group) !== -1; });
+    }
+
+    function applyCanonicalFields(id, fields, options) {
+        options = options || {};
         var db = getDb();
         var uid = currentUid();
-        if (!item || !db || !uid) {
-            toast("Firebase ou sessao admin indisponivel.", "error");
-            return;
+        if (!db || !uid) {
+            var unavailable = new Error("Firebase ou sessao admin indisponivel.");
+            unavailable.code = "firebase-unavailable";
+            return Promise.reject(unavailable);
         }
-        var ref = db.collection(COLLECTION).doc(item.__id);
+        var ref = db.collection(COLLECTION).doc(id);
         return ref.get().then(function (snapshot) {
             if (!snapshot.exists) throw conflictError();
             var base = normalizeDoc(snapshot.data() || {}, snapshot.id);
+            if (base.status === "archived") {
+                var archived = new Error("Restaure o empreendimento arquivado como rascunho antes de editar.");
+                archived.code = "establishment-archived";
+                throw archived;
+            }
             var desired = normalizeDoc(snapshot.data() || {}, snapshot.id);
             Object.keys(fields || {}).forEach(function (path) {
                 assignNested(desired, path, fields[path]);
             });
-            desired.review.lastMediaEditedAt = serverTimestamp();
-            desired.review.lastMediaEditedBy = uid;
-            desired.review.mediaEditReason = limit(reason, 240);
-            var wasPublished = base.status === "published";
-            var draftPromise = Promise.resolve();
-            if (wasPublished) {
-                var draft = lifecycleEditDraft(base, uid);
-                var draftSaga = buildSaga(ref, draft, base, uid, ["lifecycle"]);
-                draftPromise = executeSaga(db, draftSaga).then(function () {
-                    base = draft;
-                    base.revision = draftSaga.expectedRevision;
-                    base.validatedGroups.lifecycle = SCHEMA_VERSION;
-                    desired.status = "draft";
-                    desired.publishing = draft.publishing;
-                    desired.editSession = draft.editSession;
-                });
-            }
-            return draftPromise.then(function () {
-                var groups = ["media", "review"];
-                var editSaga = buildSaga(ref, desired, base, uid, groups);
-                return executeSaga(db, editSaga).then(function () {
-                    if (!wasPublished) return null;
-                    var publishBase = normalizeDoc(desired, desired.id);
-                    publishBase.revision = editSaga.expectedRevision;
-                    publishBase.validatedGroups = Object.assign({}, base.validatedGroups);
-                    GROUP_ORDER.forEach(function (group) {
-                        if (base.validatedGroups[group] === SCHEMA_VERSION || groups.indexOf(group) !== -1) {
-                            publishBase.validatedGroups[group] = SCHEMA_VERSION;
-                        }
-                    });
-                    var publish = lifecyclePublished(publishBase, uid);
-                    return executeSaga(db, buildSaga(ref, publish, publishBase, uid, ["lifecycle"]));
-                });
+            var candidateGroups = ensureArray(options.groups).length
+                ? ensureArray(options.groups).filter(function (group) { return GROUP_ORDER.indexOf(group) !== -1; })
+                : groupsForFieldPaths(fields);
+            var groups = candidateGroups.filter(function (group) {
+                return !semanticGroupsEqual(base, desired, group) ||
+                    !base.validatedGroups || base.validatedGroups[group] !== SCHEMA_VERSION;
             });
-        })
+            var resumePublished = base.status === "published" || hasResumeEditSession(base);
+            var initialSaga;
+            if (base.status === "published") {
+                initialSaga = buildSaga(ref, lifecycleEditDraft(base, uid), base, uid, ["lifecycle"]);
+                initialSaga.resumePhase = "groups";
+                initialSaga.resumePayload = desired;
+                initialSaga.resumeWasPublished = true;
+            } else {
+                initialSaga = buildSaga(ref, desired, base, uid, groups);
+                initialSaga.resumePhase = resumePublished ? "publish" : "finish";
+            }
+            initialSaga.flow = clean(options.flow) || "canonical-update";
+            return executeSaga(db, initialSaga).then(function () {
+                return resumeSagaWorkflow(db, initialSaga);
+            });
+        });
+    }
+
+    function writeMediaUpdate(id, fields, successMessage, reason) {
+        var item = findItem(id);
+        var uid = currentUid();
+        if (!item || !uid) {
+            toast("Firebase ou sessao admin indisponivel.", "error");
+            return;
+        }
+        var updateFields = Object.assign({}, fields || {}, {
+            "review.lastMediaEditedAt": serverTimestamp(),
+            "review.lastMediaEditedBy": uid,
+            "review.mediaEditReason": limit(reason, 240)
+        });
+        return applyCanonicalFields(item.__id, updateFields, { groups: ["media", "review"], flow: "media" })
             .then(function () {
                 toast(successMessage, "success");
                 return load().then(function () {
@@ -2082,6 +2226,10 @@
                 });
             })
             .catch(function (error) {
+                if (error && error.code === "establishment-archived") {
+                    toast(error.message, "error");
+                    return;
+                }
                 handleWriteError(error, reason || "editar midia");
             });
     }
@@ -2099,7 +2247,7 @@
         if (!data || isRemovedImage(data.image)) return;
         var alt = window.prompt("Alt recomendado para acessibilidade. Descreva o conteudo relevante da imagem:", data.image.alt || "");
         if (alt === null) return;
-        if (!clean(alt) && !window.confirm("Salvar sem alt? O alt e recomendado antes de qualquer uso publico futuro.")) return;
+        if (!clean(alt) && !window.confirm("Salvar sem alt? O texto alternativo e recomendado para acessibilidade no portal.")) return;
         var caption = window.prompt("Legenda opcional da imagem:", data.image.caption || "");
         if (caption === null) return;
         var credit = window.prompt("Credito opcional da imagem:", data.image.credit || "");
@@ -2120,10 +2268,10 @@
     function setMainImageFromGallery(id, index) {
         var data = getGalleryItem(id, index);
         if (!data || isRemovedImage(data.image)) return;
-        if (!window.confirm("Esta imagem sera definida como imagem principal do catalogo interno. O site publico ainda nao sera alterado.")) return;
+        if (!window.confirm("Definir esta imagem como principal? Se o empreendimento estiver publicado, a alteracao sera republicada no portal.")) return;
         writeMediaUpdate(id, {
             "media.mainImage": imageForMainImage(data.image, currentUid())
-        }, "Imagem principal atualizada no catalogo interno.", "definir imagem principal pela galeria");
+        }, "Imagem principal atualizada.", "definir imagem principal pela galeria");
     }
 
     function moveGalleryImage(id, index, direction) {
@@ -2147,7 +2295,7 @@
     function removeGalleryImage(id, index) {
         var data = getGalleryItem(id, index);
         if (!data || isRemovedImage(data.image)) return;
-        if (!window.confirm("Remover esta imagem da galeria ativa? O arquivo no Storage nao sera apagado. " + PUBLIC_STATIC_NOTICE)) return;
+        if (!window.confirm("Remover esta imagem da galeria ativa? O arquivo no Storage nao sera apagado. Se o empreendimento estiver publicado, a galeria sera republicada.")) return;
         var uid = currentUid();
         var removedImage = Object.assign({}, data.image, {
             status: "removed",
@@ -2166,7 +2314,7 @@
     function restoreGalleryImage(id, index) {
         var data = getGalleryItem(id, index);
         if (!data || !isRemovedImage(data.image)) return;
-        if (!window.confirm("Restaurar esta imagem para a galeria ativa? " + PUBLIC_STATIC_NOTICE)) return;
+        if (!window.confirm("Restaurar esta imagem para a galeria ativa? Se o empreendimento estiver publicado, a galeria sera republicada.")) return;
         var uid = currentUid();
         var restoredImage = Object.assign({}, data.image, {
             status: "active",
@@ -2187,6 +2335,7 @@
         state.editingId = "";
         state.editingBase = null;
         state.pendingSaga = null;
+        state.pendingUploadedMedia = [];
         state.draftShellId = "";
         var target = document.getElementById ? document.getElementById("establishments-admin-editor") : null;
         if (target) target.innerHTML = "";
@@ -2235,6 +2384,8 @@
         openForm: openForm,
         submitForm: submitForm,
         cancelForm: cancelForm,
+        publish: publish,
+        unpublish: unpublish,
         archive: archive,
         restore: restore,
         remove: remove,
@@ -2252,6 +2403,7 @@
         _normalizeDoc: normalizeDoc,
         _readForm: readForm,
         _validateDocForSave: validateDocForSave,
+        _isValidMediaReference: isValidMediaReference,
         _makeSlug: makeSlug,
         _GROUP_ORDER: GROUP_ORDER,
         _GROUP_FIELDS: GROUP_FIELDS,
@@ -2266,6 +2418,9 @@
         _lifecyclePublished: lifecyclePublished,
         _hasResumeEditSession: hasResumeEditSession,
         _prepareUploads: prepareUploads,
+        _uploadedMediaReferenced: uploadedMediaReferenced,
+        _applyCanonicalFields: applyCanonicalFields,
+        _groupsForFieldPaths: groupsForFieldPaths,
         _resumeSagaWorkflow: resumeSagaWorkflow,
         _reconcilePendingGroup: reconcilePendingGroup,
         _deleteButton: deleteButton,

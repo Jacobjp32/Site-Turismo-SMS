@@ -125,6 +125,19 @@ test("CSP de produção não libera endpoints locais", async () => {
   assert.doesNotMatch(csp, /localhost|127\.0\.0\.1|0\.0\.0\.0|\[?::1\]?/i);
 });
 
+test("Admin vincula interações com cache quente e exige restauração antes de editar arquivado", async () => {
+  const [html, establishments] = await Promise.all([
+    read("admin-firebase.html"),
+    read("js/admin/modules/empreendimentos.js")
+  ]);
+
+  assert.match(html, /bindAdminInteractions\(\);[\s\S]*window\.addEventListener\(['"]firebaseReady['"],\s*bindAdminInteractions\)/);
+  assert.match(html, /if \(adminInteractionsBound\) return;/);
+  assert.match(establishments, /existing\s*&&\s*existing\.status\s*===\s*["']archived["'][\s\S]*Restaure o empreendimento arquivado como rascunho antes de editar/);
+  assert.match(establishments, /status\s*===\s*["']archived["'][\s\S]*disabled title=["']Restaure como rascunho antes de editar/);
+  assert.doesNotMatch(establishments, /base\.status\s*===\s*["']published["']\s*\|\|\s*base\.status\s*===\s*["']archived["']/);
+});
+
 test("consumidores e rotas preservam contratos congelados", async () => {
   const [gallery, season, mascot, eventData, eventAdapter] = await Promise.all([
     read("js/public-gallery.js"), read("js/season-theme.js"), read("js/tourism-mascot.js"),

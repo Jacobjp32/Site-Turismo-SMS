@@ -532,31 +532,39 @@ body.font-larger{font-size:140%!important;}
         document.body.appendChild(weatherScript);
     }
 
-    [
-        'js/locais-data.js',
-        'js/rotas-data.js',
-        'js/data/pontos-turisticos.js',
-        'js/data/rotas.js',
-        'js/data/hospedagens.js',
-        'js/data/restaurantes.js',
-        'js/data/eventos.js',
-        'js/data/informacoes-essenciais.js',
-        'js/data/turismo-data-adapter.js',
-        'js/data/turismo-data.js',
-        'js/search-index.js',
-        'js/search.js'
-    ].forEach(function(src) {
-        if (!hasLoadedScript(src)) {
-            var script = document.createElement('script');
-            script.src = src === 'js/search-index.js'
-                ? src + '?v=site-agrosamas-hub-20260909-r2'
-                : src === 'js/data/eventos.js'
-                    ? src + '?v=agro-04-20260909'
-                    : src;
-            script.async = false;
-            document.body.appendChild(script);
-        }
-    });
+    if (!isRestrictedPage) {
+        [
+            'config.js',
+            'js/locais-data.js',
+            'js/rotas-data.js',
+            'js/data/pontos-turisticos.js',
+            'js/data/rotas.js',
+            'js/data/hospedagens.js',
+            'js/data/restaurantes.js',
+            'js/data/eventos.js',
+            'js/data/informacoes-essenciais.js',
+            'js/data/turismo-data-adapter.js',
+            'js/cms-public-routes-adapter.js',
+            'js/cms-public-establishments-adapter.js',
+            'js/data/turismo-data.js',
+            'js/public-establishments-renderer.js',
+            'js/search-index.js',
+            'js/search.js'
+        ].forEach(function(src) {
+            if (!hasLoadedScript(src)) {
+                var script = document.createElement('script');
+                script.src = src === 'js/search-index.js'
+                    ? src + '?v=site-agrosamas-hub-20260909-r2'
+                    : src === 'js/data/eventos.js'
+                        ? src + '?v=agro-04-20260909'
+                        : /cms-public|turismo-data\.js|public-establishments-renderer/.test(src)
+                            ? src + '?v=admin-e2e-publication-20260911'
+                            : src;
+                script.async = false;
+                document.body.appendChild(script);
+            }
+        });
+    }
 
     // Hamburger toggle
     document.addEventListener('DOMContentLoaded', function () {

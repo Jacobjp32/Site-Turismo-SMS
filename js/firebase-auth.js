@@ -399,11 +399,15 @@ function getMediaApplicationErrorMessage(error) {
         return 'Não foi possível enviar a imagem para cms-media.';
     }
 
-    if (error && error.cmsMediaType === 'batch') {
-        return 'Imagem enviada, mas catálogo não foi atualizado. Pode haver mídia órfã.';
+    if (error && error.cmsMediaType === 'document') {
+        return 'Upload confirmado, mas o documento não foi atualizado. O retry reutiliza o mesmo objeto e reconcilia a referência; nenhuma publicação foi alterada.';
     }
 
-    return 'Erro ao aplicar mídia aceita ao catálogo interno.';
+    if (error && error.cmsMediaType === 'request-tracking') {
+        return 'A mídia foi vinculada ao empreendimento, mas o registro da solicitação não foi concluído. Tente novamente para reconciliar sem novo upload.';
+    }
+
+    return 'Erro ao aplicar mídia aceita ao catálogo editorial.';
 }
 
 var firebaseStorageModulePromise = null;
@@ -694,6 +698,8 @@ async function copyReviewedImageToCmsMedia(storage, image, adminUid, establishme
     }
 
     var safeFileName = getSafeFileNameFromPath(sourceName);
+    // O destino e deterministico por solicitacao/imagem. Um retry apos
+    // resposta ambigua reutiliza o mesmo objeto em vez de gerar orfao novo.
     var destinationPath = [
         'cms-media',
         adminUid,
@@ -701,7 +707,7 @@ async function copyReviewedImageToCmsMedia(storage, image, adminUid, establishme
         establishmentId,
         'reviewed',
         requestId,
-        Date.now() + '-' + String(index + 1) + '-' + safeFileName
+        String(index + 1) + '-' + safeFileName
     ].join('/');
     var destinationRef = storage.ref(destinationPath);
     var destinationUrl = '';
@@ -1719,13 +1725,50 @@ const FirebaseSystem = {
             var appliedMedia = buildSafeAppliedMedia(request.appliedMedia);
             var catalogImages = [mainImage].concat(gallery);
             var reviewMap = buildSafeMediaReviewMap(request.mediaReview && request.mediaReview.images);
-            var acceptedImages = buildSafeImageMetadata(request.images).filter(function(image) {
+            var reviewedAcceptedImages = buildSafeImageMetadata(request.images).filter(function(image) {
                 var review = reviewMap[buildMediaReviewKey(image)] || {};
-                return normalizeMediaReviewStatus(review.status) === 'accepted' &&
-                    !isImageAlreadyApplied(image, appliedMedia, catalogImages);
+                return normalizeMediaReviewStatus(review.status) === 'accepted';
+            });
+            var acceptedImages = reviewedAcceptedImages.filter(function(image) {
+                return !isImageAlreadyApplied(image, appliedMedia, catalogImages);
             });
 
+            if (!reviewedAcceptedImages.length) {
+                return { success: false, message: 'Não há imagens aceitas para aplicar.' };
+            }
+
             if (!acceptedImages.length) {
+                var reconciledMedia = reviewedAcceptedImages.map(function(sourceImage) {
+                    var sourcePath = sanitizeSimpleText(sourceImage && sourceImage.path, 512);
+                    var sourceUrl = sanitizeSimpleText(sourceImage && sourceImage.url, 2048);
+                    var catalogImage = catalogImages.find(function(image) {
+                        return image && ((sourcePath && image.sourceImagePath === sourcePath) ||
+                            (sourceUrl && image.sourceImageUrl === sourceUrl));
+                    });
+                    if (!catalogImage) return null;
+                    return {
+                        sourceRequestId: normalizedRequestId,
+                        sourceImagePath: sourcePath,
+                        sourceImageUrl: sourceUrl,
+                        destination: mainImage && catalogImage.path === mainImage.path ? 'mainImage' : 'gallery',
+                        url: sanitizeSimpleText(catalogImage.url, 2048),
+                        path: sanitizeSimpleText(catalogImage.path, 512),
+                        appliedAt: sanitizeSimpleText(catalogImage.uploadedAt, 80),
+                        appliedBy: sanitizeSimpleText(catalogImage.uploadedBy, 160),
+                        establishmentId: establishmentId
+                    };
+                }).filter(Boolean);
+                if (reconciledMedia.length === reviewedAcceptedImages.length) {
+                    var reconciledAt = firebase.firestore.FieldValue.serverTimestamp();
+                    await requestRef.update({
+                        updatedAt: reconciledAt,
+                        mediaAppliedAt: reconciledAt,
+                        mediaAppliedBy: currentUser.uid,
+                        mediaAppliedTo: establishmentId,
+                        appliedMedia: reconciledMedia
+                    });
+                    return { success: true, message: 'Aplicação de mídia já presente no empreendimento e registro da solicitação reconciliado sem novo upload.' };
+                }
                 return { success: false, message: 'Não há imagens aceitas ainda não aplicadas.' };
             }
 
@@ -1803,23 +1846,34 @@ const FirebaseSystem = {
                 appliedMedia: newAppliedMedia
             };
 
-            var batch = db.batch();
-            batch.update(establishmentRef, establishmentUpdate);
-            batch.update(requestRef, requestUpdate);
+            var adminEstablishments = window.AdminEstablishmentsModule;
+            if (!adminEstablishments || typeof adminEstablishments._applyCanonicalFields !== 'function') {
+                throw createMediaApplicationError('document', 'Workflow canonico de empreendimentos indisponivel.');
+            }
             try {
-                await batch.commit();
+                await adminEstablishments._applyCanonicalFields(establishmentId, establishmentUpdate, {
+                    groups: ['media', 'review'],
+                    flow: 'approved-media-request'
+                });
             } catch(error) {
-                logStorageCopyDiagnostic('warn', 'batch:error', Object.assign({
+                logStorageCopyDiagnostic('warn', 'document:error', Object.assign({
                     requestId: normalizedRequestId,
                     establishmentId: establishmentId,
                     uploadedCount: String(uploadedCatalogImages.length)
                 }, getErrorLogDetails(error)));
-                throw createMediaApplicationError('batch', 'Falha ao atualizar catálogo após upload da imagem.', error);
+                throw createMediaApplicationError('document', 'Falha ao atualizar documento após upload da imagem.', error);
+            }
+            try {
+                await requestRef.update(requestUpdate);
+            } catch(error) {
+                throw createMediaApplicationError('request-tracking', 'Falha ao registrar a aplicação na solicitação.', error);
             }
 
             return {
                 success: true,
-                message: 'Mídia aceita aplicada ao catálogo interno. Os arquivos originais em submissions foram preservados e o site público não mudou.'
+                message: establishment.status === 'published'
+                    ? 'Mídia aceita aplicada e republicada no portal. Os arquivos originais em submissions foram preservados.'
+                    : 'Mídia aceita aplicada ao rascunho. O conteúdo continuará privado até uma publicação explícita.'
             };
         } catch(error) {
             console.error(error);
@@ -1853,7 +1907,7 @@ const FirebaseSystem = {
             }
 
             if (request.appliedAt || request.appliedBy || request.appliedTo) {
-                return { success: false, message: 'Esta solicitação já foi aplicada ao catálogo interno.' };
+                return { success: false, message: 'Esta solicitação já foi aplicada ao catálogo editorial.' };
             }
 
             var establishmentId = sanitizeSimpleText(request.establishmentId, 160);
@@ -1902,18 +1956,28 @@ const FirebaseSystem = {
                 appliedFields: appliedFields
             };
 
-            var batch = db.batch();
-            batch.update(establishmentRef, establishmentUpdate);
-            batch.update(requestRef, requestUpdate);
-            await batch.commit();
+            var alreadyAppliedToDocument = establishment.review &&
+                establishment.review.lastAppliedRequestId === normalizedRequestId;
+            if (!alreadyAppliedToDocument) {
+                var adminEstablishments = window.AdminEstablishmentsModule;
+                if (!adminEstablishments || typeof adminEstablishments._applyCanonicalFields !== 'function') {
+                    return { success: false, message: 'Workflow canônico de empreendimentos indisponível.' };
+                }
+                await adminEstablishments._applyCanonicalFields(establishmentId, establishmentUpdate, {
+                    flow: 'approved-text-request'
+                });
+            }
+            await requestRef.update(requestUpdate);
 
             return {
                 success: true,
-                message: 'Solicitação aplicada ao catálogo interno. O site público continua usando dados estáticos.'
+                message: establishment.status === 'published'
+                    ? 'Solicitação aplicada e alterações republicadas no portal.'
+                    : 'Solicitação aplicada ao rascunho. O conteúdo continuará privado até uma publicação explícita.'
             };
         } catch(error) {
             console.error(error);
-            return { success: false, message: 'Erro ao aplicar solicitação ao catálogo interno.' };
+            return { success: false, message: 'Erro ao aplicar solicitação ao catálogo editorial.' };
         }
     },
 
