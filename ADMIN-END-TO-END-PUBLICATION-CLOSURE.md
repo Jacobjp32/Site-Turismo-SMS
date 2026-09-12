@@ -1,9 +1,17 @@
 # ADMIN-E2E-01 — Fechamento do contrato de publicação
 
 Data da execução: 2026-09-11\
+Atualização de fechamento em produção: 2026-09-12\
 Projeto local: `D:\PROJETOS CODEX\SITE-TURISMO-SMS-mainv2`\
 Projeto Firebase auditado: `turismo-sms`\
-Classificação: `ADMIN E2E PUBLICATION CLOSURE READY FOR HUMAN REVIEW`
+Classificação: `ADMIN E2E PUBLICATION CLOSURE COMPLETE — PRODUCTION VERIFIED`
+
+> **Escopo deste documento.** As seções 1 a 14 descrevem o bloco original de
+> 2026-09-11, executado integralmente em ambiente local e Emulator, sem escrita
+> em produção. As seções 15 a 18 foram atualizadas em 2026-09-12 para registrar
+> o fechamento real em produção. Onde o texto histórico afirma que nenhuma
+> escrita foi feita em produção, a afirmação se refere **ao bloco original de
+> 2026-09-11**, não ao fechamento de 2026-09-12.
 
 ## 1. Resultado executivo
 
@@ -460,19 +468,27 @@ Os serviços e o servidor temporário foram encerrados após o QA.
 
 ## 13. Validações executadas
 
+Últimos gates aprovados antes do release. Não houve execução posterior de
+suíte funcional; estes são os resultados vigentes no momento do fechamento.
+
 | Comando | Resultado |
 |---|---|
-| `npm.cmd run test:admin-public-e2e` | PASS, 16/16 |
+| `node --test tests/admin-media-reference-validation.test.mjs` | PASS, 13/13 |
+| `npm.cmd run test:admin-public-e2e` | PASS, 19/19 |
 | `npm.cmd run test:admin-finalization` | PASS, 16/16 |
+| `npm.cmd run test:rules` | PASS, Firestore 364/364 e Storage 57/57 |
 | `npm.cmd run test:rotas:model` | PASS, 29/29 |
 | `npm.cmd run test:rotas:public` | PASS, 21/21 |
 | `npm.cmd run test:agrosamas` | PASS, 112/112 |
 | `npm.cmd run test:header-structural` | PASS, 8/8 |
 | `npm.cmd run test:media-reference-safety` | PASS, 11/11 |
-| `npm.cmd run test:rules` | PASS, Firestore 364/364 e Storage 57/57 |
 | `node scripts/check-agent-harness.mjs --check` | PASS |
 | `node --check` nos JS/MJS alterados | PASS |
 | `git diff --check` | PASS; somente avisos de política EOL do Git |
+
+Observação: no bloco original de 2026-09-11, `test:admin-public-e2e` registrava
+16/16. A suíte evoluiu para 19/19 com a inclusão dos cenários de recovery
+(republicação de saga abandonada e conflito por alteração externa).
 
 ## 14. Arquivos alterados
 
@@ -510,14 +526,16 @@ Os serviços e o servidor temporário foram encerrados após o QA.
 - `scripts/admin-public-e2e-emulator-seed.mjs` (novo)
 - `ADMIN-END-TO-END-PUBLICATION-CLOSURE.md` (este relatório)
 
-## 15. Reparo mínimo pendente em produção — Artur Biergarten
+## 15. Reparo em produção concluído — Artur Biergarten
+
+### 15.1 Diagnóstico original (2026-09-11)
 
 A evidência mostra que a intenção editorial imediatamente anterior era
 `published`, que o upload foi concluído e que o objeto existente é válido e já
-está referenciado. Portanto, o reparo mínimo não precisa de novo upload nem de
+está referenciado. Portanto, o reparo mínimo não precisava de novo upload nem de
 alteração de mídia.
 
-Write necessário, ainda **não executado**:
+Write necessário, ainda **não executado** no bloco original:
 
 1. abrir uma única transação no documento
    `cms_establishments/artur-biergarten`;
@@ -541,22 +559,232 @@ Write necessário, ainda **não executado**:
 Não escrever no Storage, não criar nova mídia, não editar conteúdo, não apagar
 o objeto existente e não alterar os outros 66 documentos.
 
-Esse write exige uma autorização explícita separada para produção. A
-classificação deste relatório não o autoriza, nem autoriza deploy, commit ou
-push.
+### 15.2 Pre-flight final (2026-09-12)
+
+| Verificação | Valor observado |
+|---|---|
+| `status` | `draft` |
+| `revision` | `13` |
+| `schemaVersion` | `2` |
+| `editSession` | presente |
+| `editSession.resumeStatus` | `published` |
+| `editSession.startedAt` | `2026-09-10T18:49:34Z` |
+| `validatedGroups` | 13/13 == 2 |
+| `media.mainImage` | ativa, mesma referência existente, caption `Fachada`, source `cms-media` |
+| `audit_logs` antes do reparo | 13, todos dentro da janela original `2026-09-10 18:49:34–18:49:36`, nenhum posterior |
+
+Classificação da `editSession`: `KNOWN_ABANDONED_EDIT_SAGA`. A sessão não
+representava uma nova mudança de produção; era parte do incidente original já
+documentado na seção 3.
+
+### 15.3 Método de recovery
+
+Workflow canônico do Admin publicado, executado **uma única vez**:
+
+```text
+AdminEstablishmentsModule.publish('artur-biergarten')
+```
+
+Rótulo na UI: **"Concluir e republicar"**.
+
+Não foi usado Admin SDK, REST privilegiado, patch manual ou novo upload. Nenhum
+campo foi editado antes da ação.
+
+### 15.4 Resultado final
+
+| Campo | Antes | Depois |
+|---|---|---|
+| `status` | `draft` | `published` |
+| `revision` | `13` | `14` |
+| `editSession` | presente | removida |
+| `updatedAt` | `2026-09-10T18:49:36Z` | `2026-09-12T12:54:23Z` |
+
+- `media.mainImage`: preservada exatamente (mesmo `path`, caption `Fachada`,
+  `status` active, `source` cms-media).
+- `gallery`: 0 itens, inalterada.
+- Demais grupos editoriais (`core`, `content`, `contact`, `location`, `media`,
+  `relationships`, `display`, `seo`, `review`, `source`): nenhuma mudança.
+- `validatedGroups`: 13/13 == 2, inalterado.
+
+### 15.5 Auditoria
+
+Novo log único:
+
+| Campo | Valor |
+|---|---|
+| `action` | `publish` |
+| `timestamp` | `2026-09-12T12:54:23Z` |
+| `summary` | `publish: cms_establishments/artur-biergarten` |
+| `source` | `firestore-auth-context-v2` |
+
+Total final de logs do Artur: **14** (13 do incidente + 1 de publish).
+
+`storageWrites = 0`. Escritas em outros empreendimentos: **0**.
+
+### 15.6 Smoke final do Artur
+
+| Verificação | Resultado |
+|---|---|
+| `PUBLIC_CATALOG_VISIBLE` | YES — presente em Sabores |
+| `PUBLIC_SEARCH_VISIBLE` | YES — busca "Artur" retorna Artur Biergarten |
+| `PUBLIC_DETAIL_VISIBLE` | YES — `/local.html?id=artur-biergarten` HTTP 200, `h1` = "Artur Biergarten" |
+| `PUBLIC_IMAGE_OK` | YES — fachada HTTP 200, `Content-Type: image/webp`, `naturalWidth=678`, mesma referência de mídia |
+| Console | 0 erros atribuíveis ao projeto |
 
 ## 16. Pendências e riscos reais
 
-- Produção continua executando o código anterior até um deploy explicitamente
-  autorizado; este bloco não fez deploy.
-- Artur continua `draft` na última leitura confirmada e requer a autorização de
-  write descrita acima para voltar ao portal.
+Resolvidas no fechamento de 2026-09-12:
+
+- ~~Produção continua executando o código anterior~~ — release publicado via
+  GitHub Pages (seção 17).
+- ~~Artur continua `draft`~~ — restaurado para `published` (seção 15).
+- ~~Revisão visual humana final pendente~~ — smoke final público executado em
+  desktop e viewport representativo (seção 17).
+
+Dívida editorial remanescente, **não bloqueante** para o fechamento do
+ADMIN-E2E-01:
+
 - Os 42 documentos com imagem principal inválida precisam de saneamento
   editorial próprio; eles não impedem a publicação, mas recebem fallback.
 - Os 11 relacionamentos de rota desconhecidos precisam ser reconciliados com o
   catálogo canônico de rotas.
 - Os quatro candidatos a mídia órfã exigem prova individual antes de qualquer
   exclusão.
-- As alterações públicas precisam de revisão visual humana final em viewport
-  desktop e móvel antes de qualquer deploy, embora o fluxo funcional local já
-  tenha sido exercitado.
+
+Essas pendências **não bloqueiam** o fechamento ADMIN-E2E-01.
+
+## 17. Incidente de Firestore Rules e release público
+
+### 17.1 Gap de ruleset em produção
+
+Descoberta posterior ao relatório original: o ruleset Firestore publicado estava
+atrás do ruleset local. A diferença relevante era o **narrow branch para
+atualização do grupo `media`**.
+
+Captura real em produção: `permission-denied` / "Missing or insufficient
+permissions" na escrita do grupo `media`.
+
+Prova diferencial no Emulator:
+
+| Rules | Payload | Resultado |
+|---|---|---|
+| publicadas antigas | `media` com 4 itens de galeria **e metadados** | **DENY** |
+| locais | mesmo payload | **ALLOW** |
+| publicadas antigas | sem os metadados | ALLOW |
+| locais | sem os metadados | ALLOW |
+
+Diagnóstico do Emulator no caso DENY:
+
+```text
+Unable to evaluate the expression as the maximum of 1000 expressions
+to evaluate has been reached.
+```
+
+Causa: a validação V2 ampla excedia o limite de 1000 expressões em documentos
+com mídia/metadados suficientes. Correção: narrow media branch.
+
+Deploy final das Rules:
+
+| Campo | Valor |
+|---|---|
+| ruleset publicado | `32f68b15-69ed-428f-b373-e89cd42f1fba` |
+| `createTime` | `2026-09-12T11:05:34Z` |
+| conteúdo publicado | byte-idêntico ao `firestore.rules` local testado |
+
+### 17.2 Migração editorial de Destaques
+
+Migração concluída. Estado final por prioridade:
+
+| Prioridade | Empreendimento |
+|---|---|
+| 800 | Delícias da Bernardina |
+| 700 | Marina Barra do Iguaçu |
+| 600 | Ancestral Gastronomia |
+| 500 | Hotel São Mateus |
+| 400 | Ribeiro Pesca e Turismo |
+| 300 | Sawe Parque Aquático |
+| 200 | Rua do Mathe |
+| 100 | Casa da Memória Padre Bauer |
+
+Resultado: `featured=true` em 8 documentos; ordem pública PASS.
+
+Ancestral Gastronomia: houve incidente durante a migração e recovery após o
+deploy das Rules. Estado final:
+
+```text
+status=published
+revision=18
+display.featured=true
+display.priority=600
+editSession ausente
+```
+
+### 17.3 Correção de validação de mídia legada
+
+Bug de formulário encontrado durante o QA: o campo de mídia usava
+`input type="url"`, e paths legados válidos como
+`images/empreendimentos/ribeiro-pesca/ribeiro-pesca-01.jpeg` eram bloqueados
+pelo navegador com "Insira um URL.".
+
+Correção aplicada:
+
+- `est_mainImageUrl`: `type="url"` → `type="text"`;
+- `est_videoUrl`: `type="url"` → `type="text"`;
+- validação JS explícita: `isValidMediaReference()`.
+
+`Site` e `Google Maps URL` continuam `type="url"`.
+
+Resultado: path relativo legado preservado verbatim; nenhuma migração ou rewrite
+de URL; teste focado 13/13 PASS.
+
+### 17.4 Release GitHub Pages
+
+O frontend **não** usa Firebase Hosting. O Firebase é usado apenas como backend
+(Authentication, Firestore, Storage, Security Rules).
+
+| Campo | Valor |
+|---|---|
+| Frontend | GitHub Pages |
+| Repositório | `Jacobjp32/SITE-TURISMO-SMS` |
+| Source | `main` / root |
+| Custom domain | `turismo.saomateusdosul.pr.gov.br` |
+| Commit de release | `432c8eb5029d52b9c096e17d703b57879e521212` |
+| Mensagem | `fix: fechar publicação end-to-end do catálogo turístico` |
+
+Resultado:
+
+- push `main` PASS;
+- GitHub Pages build PASS;
+- `public-establishments-renderer.js`: antes 404, depois HTTP 200;
+- `sw.js`: `turismo-sms-v23`, com o novo renderer no precache.
+
+### 17.5 Smoke final público
+
+| Superfície | Resultado |
+|---|---|
+| Home | 75 pontos no mapa, 91 locais cadastrados, 6 categorias, 6 rotas |
+| Destaques | 8, ordem correta — PASS |
+| Mapa | 75 markers; filtro Gastronomia 75 → 30 — PASS |
+| Sabores | 18 cards dinâmicos — PASS |
+| Onde Ficar | 7 cards dinâmicos — PASS |
+| Ancestral | detail PASS; 4/4 imagens PASS |
+| Ribeiro | detail PASS; 8/8 imagens legadas relativas PASS |
+| Admin bundle | legacy media fix publicado — PASS |
+| Console | 0 erros atribuíveis ao projeto |
+
+## 18. Fechamento final em produção — 2026-09-12
+
+- Firestore Rules atualizadas (narrow media branch publicado);
+- Featured migration concluída (8 destaques, ordem correta);
+- Ancestral recuperado (`published`, `featured=true`, `priority=600`);
+- GitHub Pages release concluído (`432c8eb`);
+- legacy media path fix publicado;
+- Artur Biergarten restaurado (`published`, `revision=14`, `editSession` removida);
+- smoke final PASS;
+- nenhum blocker conhecido do ADMIN-E2E-01.
+
+Classificação final:
+
+```text
+ADMIN E2E PUBLICATION CLOSURE COMPLETE — PRODUCTION VERIFIED
+```
